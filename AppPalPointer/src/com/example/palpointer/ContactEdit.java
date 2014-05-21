@@ -45,18 +45,18 @@ public class ContactEdit extends Activity {
 				if (name.matches("") && nr.matches("")) {
 					name = contact.getName();
 					nr = contact.getNr();
-					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_SHORT).show();
 				}
 				else if (!name.matches("") && nr.matches("")) {
 					nr = contact.getNr();
-					Toast.makeText(getBaseContext(),  "Contact name changed",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact name changed",  Toast.LENGTH_SHORT).show();
 				}
 				else if (name.matches("") && !nr.matches("")) {
 					name = contact.getName();
-					Toast.makeText(getBaseContext(),  "Contact number changed",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact number changed",  Toast.LENGTH_SHORT).show();
 				}
 				else {
-					Toast.makeText(getBaseContext(),  "Contact name and number changed",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact name and number changed",  Toast.LENGTH_SHORT).show();
 				}
 				handler.updateData(contact.getName(), name, nr);
 				handler.close();
@@ -73,7 +73,7 @@ public class ContactEdit extends Activity {
 				handler.open();
 				handler.deleteData(contact.getName());
 				handler.close();
-				Toast.makeText(getBaseContext(),  "Contact deleted",  Toast.LENGTH_LONG).show();
+				Toast.makeText(getBaseContext(),  "Contact deleted",  Toast.LENGTH_SHORT).show();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity

@@ -33,7 +33,7 @@ public class ContactAdd extends Activity {
 				name = ContactName.getText().toString();
 				nr = ContactNr.getText().toString();	
 				if (!name.matches("") && !nr.matches("")) {
-					Toast.makeText(getBaseContext(),  "Contact saved",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact saved",  Toast.LENGTH_SHORT).show();
 					handler = new DataHandler(getBaseContext());
 					handler.open();
 					long id = handler.insertData(name, nr);
@@ -44,13 +44,13 @@ public class ContactAdd extends Activity {
 					startActivity(intent);
 				}
 				else if (!name.matches("") && nr.matches("")) {
-					Toast.makeText(getBaseContext(),  "Contact number required",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact number required",  Toast.LENGTH_SHORT).show();
 				}
 				else if (name.matches("") && !nr.matches("")) {
-					Toast.makeText(getBaseContext(),  "Contact name required",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact name required",  Toast.LENGTH_SHORT).show();
 				}
 				else {
-					Toast.makeText(getBaseContext(),  "Contact name and number required",  Toast.LENGTH_LONG).show();
+					Toast.makeText(getBaseContext(),  "Contact name and number required",  Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
