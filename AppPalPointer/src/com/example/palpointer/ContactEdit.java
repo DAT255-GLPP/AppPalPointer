@@ -1,11 +1,7 @@
 package com.example.palpointer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,37 +12,53 @@ import android.widget.Toast;
 
 public class ContactEdit extends Activity {
 
-	EditText ContactName;
-	EditText ContactNr;
-	TextView ContactInfo;
-	Button SaveEdit;
-	Button DeleteContact;
+	public EditText ContactName;
+	public EditText ContactNr;
+	public TextView ContactInfo;
+	public Button SaveEdit;
+	public Button DeleteContact;
 	public String name ="";
 	public String nr ="";
 	public DataHandler handler;
 	public Contact contact;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contact_edit);
 		ContactInfo = (TextView)findViewById(R.id.contactinfo);
-		ContactName = (EditText)findViewById(R.id.contactname);
-		ContactNr = (EditText)findViewById(R.id.contactnr);
+		ContactName = (EditText)findViewById(R.id.setcontactname);
+		ContactNr = (EditText)findViewById(R.id.setcontactnr);
 		SaveEdit = (Button)findViewById(R.id.saveedit);
 		DeleteContact = (Button)findViewById(R.id.deletecontact);
-		
+
 		Bundle data = getIntent().getExtras();
 		contact = (Contact) data.getParcelable("contact");
 		ContactInfo.setText("Contact name: " + contact.getName() + "\nContact nr: " + contact.getNr());
-		
+
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
-				nr = ContactNr.getText().toString();
+				nr = ContactNr.getText().toString();			
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-	//			handler.update(contact.getName(), name, nr);
+				if (name.matches("") && nr.matches("")) {
+					name = contact.getName();
+					nr = contact.getNr();
+					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_LONG).show();
+				}
+				else if (!name.matches("") && nr.matches("")) {
+					nr = contact.getNr();
+					Toast.makeText(getBaseContext(),  "Contact name changed",  Toast.LENGTH_LONG).show();
+				}
+				else if (name.matches("") && !nr.matches("")) {
+					name = contact.getName();
+					Toast.makeText(getBaseContext(),  "Contact number changed",  Toast.LENGTH_LONG).show();
+				}
+				else {
+					Toast.makeText(getBaseContext(),  "Contact name and number changed",  Toast.LENGTH_LONG).show();
+				}
+				handler.updateData(contact.getName(), name, nr);
 				handler.close();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
@@ -54,13 +66,14 @@ public class ContactEdit extends Activity {
 				startActivity(intent);
 			}
 		});
-		
+
 		DeleteContact.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-//				handler.deleteData(contact.getName(), contact.getNr());
+				handler.deleteData(contact.getName());
 				handler.close();
+				Toast.makeText(getBaseContext(),  "Contact deleted",  Toast.LENGTH_LONG).show();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
@@ -68,5 +81,4 @@ public class ContactEdit extends Activity {
 			}
 		});		
 	}
-	
 }
