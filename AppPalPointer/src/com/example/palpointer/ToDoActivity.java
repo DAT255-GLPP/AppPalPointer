@@ -437,19 +437,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		// Start the animation
 		
-		if (greenArrow){
-			image.setImageResource(R.drawable...);
-			image.startAnimation(ra);
-			currentDegree = -degree;
-		}
-		else if (redArrow){
-			redImage.startAnimation(ra);
-			currentDegree = -degree;
-		}
-		
-		else if (!greenArrow && !redArrow)
-			image.startAnimation(ra);
-			currentDegree = -degree;
+		image.startAnimation(ra);
+		currentDegree = -degree;
 	}
 
 	private void authenticate() {
@@ -545,16 +534,20 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		@Override
 		public void onLocationChanged(Location location) {
 			
-			if (location.getAccuracy() <= 100){
-				gpsIsAccurate = true;
+			if (!gpsIsAccurate){
+				if (location.getAccuracy() <= 100){
+					gpsIsAccurate = true;
+				}
 			}
 			
-			if (location.getAccuracy() <= 100){
+			if (location.getAccuracy() <= 30){
+				image.setImageResource(R.drawable.arrow_green);
 				greenArrow = true;
 				redArrow = false;
 			}
 			
 			else {
+				image.setImageResource(R.drawable.arrow_red);
 				redArrow = true;
 				greenArrow = false;
 			}
