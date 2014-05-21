@@ -1,11 +1,7 @@
 package com.example.palpointer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,11 +12,11 @@ import android.widget.Toast;
 
 public class ContactEdit extends Activity {
 
-	EditText ContactName;
-	EditText ContactNr;
-	TextView ContactInfo;
-	Button SaveEdit;
-	Button DeleteContact;
+	public EditText ContactName;
+	public EditText ContactNr;
+	public TextView ContactInfo;
+	public Button SaveEdit;
+	public Button DeleteContact;
 	public String name ="";
 	public String nr ="";
 	public DataHandler handler;
@@ -31,8 +27,8 @@ public class ContactEdit extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contact_edit);
 		ContactInfo = (TextView)findViewById(R.id.contactinfo);
-		ContactName = (EditText)findViewById(R.id.contactname);
-		ContactNr = (EditText)findViewById(R.id.contactnr);
+		ContactName = (EditText)findViewById(R.id.setcontactname);
+		ContactNr = (EditText)findViewById(R.id.setcontactnr);
 		SaveEdit = (Button)findViewById(R.id.saveedit);
 		DeleteContact = (Button)findViewById(R.id.deletecontact);
 
@@ -43,14 +39,24 @@ public class ContactEdit extends Activity {
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
-				nr = ContactNr.getText().toString();
+				nr = ContactNr.getText().toString();			
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-				if (name == null) {
+				if (name.matches("") && nr.matches("")) {
 					name = contact.getName();
-				}
-				if (nr == null) {
 					nr = contact.getNr();
+					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_LONG).show();
+				}
+				else if (!name.matches("") && nr.matches("")) {
+					nr = contact.getNr();
+					Toast.makeText(getBaseContext(),  "Contact name changed",  Toast.LENGTH_LONG).show();
+				}
+				else if (name.matches("") && !nr.matches("")) {
+					name = contact.getName();
+					Toast.makeText(getBaseContext(),  "Contact number changed",  Toast.LENGTH_LONG).show();
+				}
+				else {
+					Toast.makeText(getBaseContext(),  "Contact name and number changed",  Toast.LENGTH_LONG).show();
 				}
 				handler.updateData(contact.getName(), name, nr);
 				handler.close();
