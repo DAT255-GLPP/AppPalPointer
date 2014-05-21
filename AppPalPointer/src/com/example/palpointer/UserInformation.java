@@ -4,20 +4,18 @@ package com.example.palpointer;
  * Represents an item in a ToDo list
  */
 public class UserInformation {
-
-
 	
 	/**
 	 * Item latitude
 	 */
 	@com.google.gson.annotations.SerializedName("latitude")
-	private double latitude;
+	private double latitude = -1000;
 	
 	/**
 	 * Item longitude
 	 */
 	@com.google.gson.annotations.SerializedName("longitude")
-	private double longitude;
+	private double longitude = -1000;
 
 	/**
 	 * Item Id
