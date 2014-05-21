@@ -25,7 +25,7 @@ public class ContactEdit extends Activity {
 	public String nr ="";
 	public DataHandler handler;
 	public Contact contact;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,18 +35,24 @@ public class ContactEdit extends Activity {
 		ContactNr = (EditText)findViewById(R.id.contactnr);
 		SaveEdit = (Button)findViewById(R.id.saveedit);
 		DeleteContact = (Button)findViewById(R.id.deletecontact);
-		
+
 		Bundle data = getIntent().getExtras();
 		contact = (Contact) data.getParcelable("contact");
 		ContactInfo.setText("Contact name: " + contact.getName() + "\nContact nr: " + contact.getNr());
-		
+
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
 				nr = ContactNr.getText().toString();
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-	//			handler.update(contact.getName(), name, nr);
+				if (name == null) {
+					name = contact.getName();
+				}
+				if (nr == null) {
+					nr = contact.getNr();
+				}
+				handler.updateData(contact.getName(), name, nr);
 				handler.close();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
@@ -54,12 +60,12 @@ public class ContactEdit extends Activity {
 				startActivity(intent);
 			}
 		});
-		
+
 		DeleteContact.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-//				handler.deleteData(contact.getName(), contact.getNr());
+				handler.deleteData(contact.getName());
 				handler.close();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
@@ -68,5 +74,4 @@ public class ContactEdit extends Activity {
 			}
 		});		
 	}
-	
 }

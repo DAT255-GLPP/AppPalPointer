@@ -57,11 +57,15 @@ public class DataHandler {
 		return db.insertOrThrow(TABLE_NAME, null, content);
 	}
 
-	public void deleteData(String name, String phone) {
+	public int deleteData(String name) {
+		return db.delete(TABLE_NAME, "NAME = ?", new String [] {name});	
+	}
+	
+	public int updateData(String name, String newName, String newNr) {
 		ContentValues content = new ContentValues();
-		content.remove(name);
-		content.remove(phone);
-		
+		content.put(NAME, newName);
+		content.put(PHONE, newNr);
+		return db.update(TABLE_NAME, content, "NAME = ?", new String [] {name});
 	}
 
 	public Cursor returnData () {
