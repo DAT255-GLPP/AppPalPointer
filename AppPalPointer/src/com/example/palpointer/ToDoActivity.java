@@ -454,7 +454,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		
 		float degree = 0;
 		
-		if (!(contactNumber == null) && gpsIsAccurate){
+		if (!(contactNumber == null) && gpsIsAccurate && coordinatesAvailable(palLat, palLong)){
 			// get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
@@ -582,16 +582,19 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				}
 			}
 			
-			if (location.getAccuracy() <= 30){
-				image.setImageResource(R.drawable.arrow_green);
-				greenArrow = true;
-				redArrow = false;
-			}
+			if (!(contactNumber == null) && coordinatesAvailable(palLat, palLong)){
 			
-			else {
-				image.setImageResource(R.drawable.arrow_red);
-				redArrow = true;
-				greenArrow = false;
+				if (location.getAccuracy() <= 30){
+					image.setImageResource(R.drawable.arrow_green);
+					greenArrow = true;
+					redArrow = false;
+				}
+				
+				else {
+					image.setImageResource(R.drawable.arrow_red);
+					redArrow = true;
+					greenArrow = false;
+				}
 			}
 			
 			if(location != null)
