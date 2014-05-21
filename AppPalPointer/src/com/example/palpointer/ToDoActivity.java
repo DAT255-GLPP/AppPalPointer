@@ -74,6 +74,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	UpdatingThreads upload;
 	
 	boolean isAutethenticated = false;
+	
+	boolean compassIsVisible = false;
 
 
 	/**
@@ -109,8 +111,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do);
-
 		setCompassLayout();
+		
 		textLat = (TextView)findViewById(R.id.textLat);
 		textLong = (TextView)findViewById(R.id.textLong);
 		textPalLat = (TextView)findViewById(R.id.textPalLat);
@@ -391,9 +393,17 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-
-		// get the angle around the z-axis rotated
-		float degree = Math.round((event.values[0]+palBearing) % 360);
+		if (!compassIsVisible){
+			setCompassVisible(true);
+			compassIsVisible = true;
+		}
+		
+		float degree = 0;
+		
+		if (!(contactNumber == null)){
+			// get the angle around the z-axis rotated
+			degree = Math.round((event.values[0]+palBearing) % 360);
+		}
 
 		tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
 

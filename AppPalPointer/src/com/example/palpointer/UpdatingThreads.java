@@ -52,7 +52,7 @@ public class UpdatingThreads extends Thread {
 
 							if (!entity.isEmpty()){				
 								theActivity.setPalsCoordinates(entity.get(0).getLatitude(), entity.get(0).getLongitude());
-								theActivity.setCompassVisible(true);
+								//theActivity.setCompassVisible(true);
 								palsCoordinatesDownloaded = true;	
 							}
 							
