@@ -300,6 +300,44 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		});
 		alert.show();
 	}	
+	
+	
+	
+	public void updatePhoneNumber(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+		alert.setTitle("Update information");
+		alert.setMessage("Please register your phone number");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(this);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String value = input.getText().toString();
+				item.setPhoneNumber(value);
+				
+				mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
+					
+					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
+
+						if (exception != null) {
+							createAndShowDialog(exception, "Error");
+						}
+						
+					}
+				});
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	public static void setNr (String nr){
 		contactNr = nr;
