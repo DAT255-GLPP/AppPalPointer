@@ -49,6 +49,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	TextView textCurrentBearing;
 	TextView textPalBearing;
 	ImageView imageViewCompass;
+	ImageView imageViewCompassGreen;
+	ImageView imageViewCompassRed;
+	
 
 	double NO_COORDINATE = -1000;
 	double oldLat = NO_COORDINATE;
@@ -76,6 +79,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	boolean isAutethenticated = false;
 	
 	boolean compassIsVisible = false;
+	
+	boolean gpsIsAccurate = false;
+	
+	boolean greenArrow = false;
+	boolean redArrow = false;
 
 
 	/**
@@ -94,6 +102,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	//CompassStart
 	// define the display assembly compass picture
 	private ImageView image;
+	private ImageView imageGreen;
+	private ImageView imageRed;
 
 	// record the compass picture angle turned
 	private float currentDegree = 0f;
@@ -121,6 +131,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		textCurrentBearing = (TextView)findViewById(R.id.textCurrentBearing);
 		textPalBearing = (TextView)findViewById(R.id.textPalBearing);
 		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
+		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewGreen);
+		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewRed);
 
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
@@ -361,6 +373,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public void setCompassLayout(){
 		// our compass image
 		image = (ImageView) findViewById(R.id.imageViewCompass);
+		imageGreen = (ImageView) findViewById(R.id.imageViewGreen);
+		imageRed = (ImageView) findViewById(R.id.imageViewRed);
 		// TextView that will tell the user what degree is he heading
 		tvHeading = (TextView) findViewById(R.id.tvHeading);
 
@@ -400,7 +414,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		
 		float degree = 0;
 		
-		if (!(contactNumber == null)){
+		if (!(contactNumber == null) && gpsIsAccurate){
 			// get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
@@ -422,8 +436,19 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		ra.setFillAfter(true);
 
 		// Start the animation
-		image.startAnimation(ra);
-		currentDegree = -degree;
+		
+		if (greenArrow){
+			greenImage.startAnimation(ra);
+			currentDegree = -degree;
+		}
+		else if (redArrow){
+			redImage.startAnimation(ra);
+			currentDegree = -degree;
+		}
+		
+		else if (!greenArrow && !redArrow)
+			image.startAnimation(ra);
+			currentDegree = -degree;
 	}
 
 	private void authenticate() {
@@ -518,6 +543,21 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		@Override
 		public void onLocationChanged(Location location) {
+			
+			if (location.getAccuracy() <= 100){
+				gpsIsAccurate = true;
+			}
+			
+			if (location.getAccuracy() <= 100){
+				greenArrow = true;
+				redArrow = false;
+			}
+			
+			else {
+				redArrow = true;
+				greenArrow = false;
+			}
+			
 			if(location != null)
 			{
 				oldLong = myLong;
