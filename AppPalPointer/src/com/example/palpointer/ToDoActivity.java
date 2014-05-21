@@ -49,8 +49,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	TextView textCurrentBearing;
 	TextView textPalBearing;
 	ImageView imageViewCompass;
-	ImageView imageViewCompassGreen;
-	ImageView imageViewCompassRed;
+//	ImageView imageViewCompassGreen;
+//	ImageView imageViewCompassRed;
 	
 
 	double NO_COORDINATE = -1000;
@@ -102,8 +102,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	//CompassStart
 	// define the display assembly compass picture
 	private ImageView image;
-	private ImageView imageGreen;
-	private ImageView imageRed;
+//	private ImageView imageGreen;
+//	private ImageView imageRed;
 
 	// record the compass picture angle turned
 	private float currentDegree = 0f;
@@ -131,8 +131,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		textCurrentBearing = (TextView)findViewById(R.id.textCurrentBearing);
 		textPalBearing = (TextView)findViewById(R.id.textPalBearing);
 		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
-		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewGreen);
-		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewRed);
+//		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewGreen);
+//		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewRed);
 
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
@@ -373,8 +373,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public void setCompassLayout(){
 		// our compass image
 		image = (ImageView) findViewById(R.id.imageViewCompass);
-		imageGreen = (ImageView) findViewById(R.id.imageViewGreen);
-		imageRed = (ImageView) findViewById(R.id.imageViewRed);
+//		imageGreen = (ImageView) findViewById(R.id.imageViewGreen);
+//		imageRed = (ImageView) findViewById(R.id.imageViewRed);
 		// TextView that will tell the user what degree is he heading
 		tvHeading = (TextView) findViewById(R.id.tvHeading);
 
@@ -438,7 +438,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		// Start the animation
 		
 		if (greenArrow){
-			greenImage.startAnimation(ra);
+			image.setImageResource(R.drawable);
+			image.startAnimation(ra);
 			currentDegree = -degree;
 		}
 		else if (redArrow){
