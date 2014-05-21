@@ -1,31 +1,80 @@
 package com.example.palpointer;
 
+
 import static com.microsoft.windowsazure.mobileservices.MobileServiceQueryOperations.*;
+
+import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
+import com.microsoft.windowsazure.mobileservices.MobileServiceAuthenticationProvider;
+import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
 
 import java.net.MalformedURLException;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+
+
+import android.content.DialogInterface;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
-import com.microsoft.windowsazure.mobileservices.NextServiceFilterCallback;
-import com.microsoft.windowsazure.mobileservices.ServiceFilter;
-import com.microsoft.windowsazure.mobileservices.ServiceFilterRequest;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
-import com.microsoft.windowsazure.mobileservices.ServiceFilterResponseCallback;
 import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
-public class ToDoActivity extends Activity {
+public class ToDoActivity extends Activity implements SensorEventListener{
+
+	TextView textLat;
+	TextView textLong;
+	TextView textPalLat;
+	TextView textPalLong;
+	TextView textDist;
+	TextView textCurrentBearing;
+	TextView textPalBearing;
+	ImageView imageViewCompass;
+
+	double NO_COORDINATE = -1000;
+	double oldLat = NO_COORDINATE;
+	double oldLong = NO_COORDINATE;
+	double myLat = NO_COORDINATE;
+	double myLong = NO_COORDINATE;
+	double distance = 0;
+	double currentBearing = 0;
+	double palBearing = 0;
+	double palLat = NO_COORDINATE;
+	double palLong = NO_COORDINATE;
+
+	boolean keepUploadingCoordinates = false;
+	boolean keepDownloadingPalsCoordinates = false;
+
+	Thread threadForUploadingOwnCoordinates;
+	Thread threadForUploadingPalsCoordinates;
+	String phoneNumber;
+	public static String contactNr;
+	public static String contactNumber;
+
+	UpdatingThreads download;
+	UpdatingThreads upload;
+	
+	boolean isAutethenticated = false;
+
 
 	/**
 	 * Mobile Service Client reference
@@ -35,170 +84,388 @@ public class ToDoActivity extends Activity {
 	/**
 	 * Mobile Service Table used to access data
 	 */
-	private MobileServiceTable<ToDoItem> mToDoTable;
-
-	/**
-	 * Adapter to sync the items list with the view
-	 */
-	private ToDoItemAdapter mAdapter;
-
-	/**
-	 * EditText containing the "New ToDo" text
-	 */
-	private EditText mTextNewToDo;
-
-	/**
-	 * Progress spinner to use for table operations
-	 */
-	private ProgressBar mProgressBar;
+	private MobileServiceTable<UserInformation> mToDoTable;	
 
 	/**
 	 * Initializes the activity
 	 */
+	//CompassStart
+	// define the display assembly compass picture
+	private ImageView image;
+
+	// record the compass picture angle turned
+	private float currentDegree = 0f;
+
+	// device sensor manager
+	private SensorManager mSensorManager;
+
+	TextView tvHeading;
+	//CompassEnd
+
+	public MobileServiceUser user;
+	UserInformation item;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do);
-		
-		mProgressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
 
-		// Initialize the progress bar
-		mProgressBar.setVisibility(ProgressBar.GONE);
-		
+		setCompassLayout();
+		textLat = (TextView)findViewById(R.id.textLat);
+		textLong = (TextView)findViewById(R.id.textLong);
+		textPalLat = (TextView)findViewById(R.id.textPalLat);
+		textPalLong = (TextView)findViewById(R.id.textPalLong);
+		textDist = (TextView)findViewById(R.id.textDist);
+		textCurrentBearing = (TextView)findViewById(R.id.textCurrentBearing);
+		textPalBearing = (TextView)findViewById(R.id.textPalBearing);
+		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
+
+		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		LocationListener ll = new myLocationListener();
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+
 		try {
 			// Create the Mobile Service Client instance, using the provided
 			// Mobile Service URL and key
-			mClient = new MobileServiceClient(
-					"https://palpointer.azure-mobile.net/",
-					"fFsYNDwyydTpUlQsPrqfQKezqvXonv99",
-					this).withFilter(new ProgressFilter());
+			
+			mClient = Authenticate.getClient();
+			item = Authenticate.getUser();
+			
+			if ((mClient == null) && (user == null)){
+				mClient = new MobileServiceClient(
+						"https://palpointer.azure-mobile.net/",
+						"fFsYNDwyydTpUlQsPrqfQKezqvXonv99",
+						this
+						);
+				authenticate();
+				createTable();
+			}
+			
+			else if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
+				createTable();
+				contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
+				startDownloadingPalsPosition();
+			}
+		}
 
-			// Get the Mobile Service Table instance to use
-			mToDoTable = mClient.getTable(ToDoItem.class);
+			//autenticate the user
+			
 
-			mTextNewToDo = (EditText) findViewById(R.id.textNewToDo);
-
-			// Create an adapter to bind the items with the view
-			mAdapter = new ToDoItemAdapter(this, R.layout.row_list_to_do);
-			ListView listViewToDo = (ListView) findViewById(R.id.listViewToDo);
-			listViewToDo.setAdapter(mAdapter);
-		
-			// Load the items from the Mobile Service
-			refreshItemsFromTable();
-
-		} catch (MalformedURLException e) {
+		catch (MalformedURLException e) {
 			createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
 		}
+		
+		
+
+		Button gp = (Button) findViewById(R.id.gp);
+		//Listening to first button's event
+		gp.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View arg0) {
+				//Starting a new Intent
+				Intent contactScreen = new Intent(getApplicationContext(), ContactList.class);
+				//Sending data to another Activity
+				startActivity(contactScreen);
+			}
+		});
+
+		//		Button back = (Button) findViewById(R.id.goBack);
+		//
+		//	    
+		//        //Listening to first button's event
+		//        back.setOnClickListener(new View.OnClickListener() {
+		//    	
+		//        	public void onClick(View arg0) {
+		//        		
+		//        		//Starting a new Intent
+		//        		Intent firstScreen = new Intent(getApplicationContext(), Main.class);
+		//        		
+		//
+		//        		//Sending data to another Activity
+		//        		startActivity(firstScreen);
+		//        	}
+		//        });     
+
+		Button displayPos = (Button) findViewById(R.id.display);
+
+		//Listening to second button's event
+		displayPos.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View arg1) {
+				displayPalsPosition();
+
+			}
+		});
+		
+		
+		
+		
+//		if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
+//			while (!isAutethenticated){
+//				try {
+//					Thread.sleep(1 * 1000);
+//				}
+//				catch (InterruptedException e){
+//					
+//				}
+//			}
+//			contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
+//			startDownloadingPalsPosition();
+//		}
 	}
 	
-	/**
-	 * Initializes the activity menu
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
+//	public void onStart(){
+//while (!isAutethenticated){
+//			
+//		}
+//		
+//	}
+
+
+
+
+	public void checkIfPhoneNumberExists(){
+		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
+
+			@Override
+			public void onCompleted(List<UserInformation> entity, int count, Exception exception, ServiceFilterResponse response) {
+				if (exception == null) {
+
+					if (entity.isEmpty()){
+						//doesPhoneNumberExist = false;
+						item = new UserInformation();
+						Authenticate.setUser(item);
+						setIdAndPhoneNumber();	
+					}
+					else{					
+						//doesPhoneNumberExist = true;					
+						//fetchOldTableRow();	
+						item = entity.get(0);
+						Authenticate.setUser(item);
+					}
+
+				}
+
+				else {
+					createAndShowDialog(exception, "checkPhoneNumber");
+				}		
+			}
+		});
+	}
+
+	public void setIdAndPhoneNumber() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+		alert.setTitle("Update information");
+		alert.setMessage("Please register your phone number");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(this);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String value = input.getText().toString();
+				// Do something with value!
+
+				item.setUserId(user.getUserId());
+				item.setPhoneNumber(value);
+
+				mToDoTable.insert(item, new TableOperationCallback<UserInformation>() {
+
+					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
+
+						if (exception == null) {
+
+						} else {
+							createAndShowDialog(exception, "Error");
+						}
+
+					}
+				});	  
+			}
+		});
+		alert.show();
+	}	
+
+	public static void setNr (String nr){
+		contactNr = nr;
+	}
+
+
+	public void startDownloadingPalsPosition(){
+//		if (download.isAlive()){
+//			download.setWhileLoopStatus(false);
+//		}
+//		while (download.isAlive()){
+//			try {
+//				Thread.sleep(5 * 100);
+//			}
+//			catch (InterruptedException e){
+//				
+//			}
+//		}
+		
+		download = new UpdatingThreads(this, item, "download");
+		download.start();
+	}
+
+
+	public void displayPalsPosition(){
+		download = new UpdatingThreads(this, item, "download");
+
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+		alert.setTitle("Search Friend");
+		alert.setMessage("Please state friends phone number");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(this);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				phoneNumber = input.getText().toString();
+				download.start();
+			}
+		});
+		alert.show();
+
+	}
+
+	public MobileServiceTable<UserInformation> getTable(){
+		return mToDoTable;
+	}
+
+	public static String getRequestedPhoneNumber (){
+		return contactNumber;
+	}
+
+	public void setPalsCoordinates(double palLat, double palLong){
+		this.palLat = palLat;
+		this.palLong = palLong;
+	}
+
+	public void setCompassVisible(boolean value){
+		if (value == true){
+			imageViewCompass.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public void stopDownloadingCoordinates(View view){
+		if (!(download == null))
+			download.setWhileLoopStatus(false); 
+	}
+
+	public void setCompassLayout(){
+		// our compass image
+		image = (ImageView) findViewById(R.id.imageViewCompass);
+		// TextView that will tell the user what degree is he heading
+		tvHeading = (TextView) findViewById(R.id.tvHeading);
+
+		// initialize your android device sensor capabilities
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
 	}
 	
-	/**
-	 * Select an option from the menu
-	 */
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menu_refresh) {
-			refreshItemsFromTable();
-		}
-		
-		return true;
+	protected void onResume() {
+		super.onResume();
+
+		// for the system's orientation sensor registered listeners
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+				SensorManager.SENSOR_DELAY_GAME);
 	}
 
-	/**
-	 * Mark an item as completed
-	 * 
-	 * @param item
-	 *            The item to mark
-	 */
-	public void checkItem(ToDoItem item) {
-		if (mClient == null) {
-			return;
-		}
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-		// Set the item as completed and update it in the table
-		item.setComplete(true);
-		
-		mToDoTable.update(item, new TableOperationCallback<ToDoItem>() {
-
-			public void onCompleted(ToDoItem entity, Exception exception, ServiceFilterResponse response) {
-				if (exception == null) {
-					if (entity.isComplete()) {
-						mAdapter.remove(entity);
-					}
-				} else {
-					createAndShowDialog(exception, "Error");
-				}
-			}
-
-		});
+		// to stop the listener and save battery
+		mSensorManager.unregisterListener(this);
 	}
 
-	/**
-	 * Add a new item
-	 * 
-	 * @param view
-	 *            The view that originated the call
-	 */
-	public void addItem(View view) {
-		if (mClient == null) {
-			return;
-		}
-
-		// Create a new item
-		ToDoItem item = new ToDoItem();
-
-		item.setText(mTextNewToDo.getText().toString());
-		item.setComplete(false);
-		
-		// Insert the new item
-		mToDoTable.insert(item, new TableOperationCallback<ToDoItem>() {
-
-			public void onCompleted(ToDoItem entity, Exception exception, ServiceFilterResponse response) {
-				
-				if (exception == null) {
-					if (!entity.isComplete()) {
-						mAdapter.add(entity);
-					}
-				} else {
-					createAndShowDialog(exception, "Error");
-				}
-
-			}
-		});
-
-		mTextNewToDo.setText("");
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// not in use
 	}
 
-	/**
-	 * Refresh the list with the items in the Mobile Service Table
-	 */
-	private void refreshItemsFromTable() {
+	@Override
+	public void onSensorChanged(SensorEvent event) {
 
-		// Get the items that weren't marked as completed and add them in the
-		// adapter
-		mToDoTable.where().field("complete").eq(val(false)).execute(new TableQueryCallback<ToDoItem>() {
+		// get the angle around the z-axis rotated
+		float degree = Math.round((event.values[0]+palBearing) % 360);
 
-			public void onCompleted(List<ToDoItem> result, int count, Exception exception, ServiceFilterResponse response) {
+		tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
+
+		// create a rotation animation (reverse turn degree degrees)
+		RotateAnimation ra = new RotateAnimation(
+				currentDegree, 
+				-degree,
+				Animation.RELATIVE_TO_SELF, 0.5f, 
+				Animation.RELATIVE_TO_SELF,
+				0.5f);
+
+		// how long the animation will take place
+		ra.setDuration(210);
+
+		// set the animation after the end of the reservation status
+		ra.setFillAfter(true);
+
+		// Start the animation
+		image.startAnimation(ra);
+		currentDegree = -degree;
+	}
+
+	private void authenticate() {
+
+		// Login using the Facebook provider.
+		mClient.login(MobileServiceAuthenticationProvider.Facebook,
+				new UserAuthenticationCallback() {
+
+			@Override
+			public void onCompleted(MobileServiceUser tempuser,
+					Exception exception, ServiceFilterResponse response) {
+				user = tempuser;
 				if (exception == null) {
-					mAdapter.clear();
-
-					for (ToDoItem item : result) {
-						mAdapter.add(item);
-					}
-
+					createAndShowDialog(String.format(
+							"You are now logged in - %1$2s",
+							user.getUserId()), "Success");
+					// createTable();
+					checkIfPhoneNumberExists();
+					Authenticate.setClient(mClient);
+					
 				} else {
-					createAndShowDialog(exception, "Error");
+					createAndShowDialog("You must log in. Login Required", "Error");
 				}
 			}
 		});
+	}
+
+
+	private void createTable() {
+
+		// Get the Mobile Service Table instance to use
+		mToDoTable = mClient.getTable(UserInformation.class);
+
+		// Load the items from the Mobile Service
+		// refreshItemsFromTable();
+	}
+
+	public void startUploadOwnCoordinates(View view){
+		if (coordinatesAvailable(myLat, myLong)) {
+			upload = new UpdatingThreads(this, item, "upload");
+			upload.start();
+		}
+		else
+			createAndShowDialog("No coordinates available", "Try again");
+	}
+
+	public double getLatitude(){
+		return myLat;
+	}
+
+	public double getLongitude(){
+		return myLong;
 	}
 
 	/**
@@ -209,7 +476,7 @@ public class ToDoActivity extends Activity {
 	 * @param title
 	 *            The dialog title
 	 */
-	private void createAndShowDialog(Exception exception, String title) {
+	public void createAndShowDialog(Exception exception, String title) {
 		Throwable ex = exception;
 		if(exception.getCause() != null){
 			ex = exception.getCause();
@@ -225,42 +492,72 @@ public class ToDoActivity extends Activity {
 	 * @param title
 	 *            The dialog title
 	 */
-	private void createAndShowDialog(String message, String title) {
+	public void createAndShowDialog(String message, String title) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 		builder.setMessage(message);
 		builder.setTitle(title);
 		builder.create().show();
 	}
-	
-	private class ProgressFilter implements ServiceFilter {
-		
+
+	public boolean coordinatesAvailable (double latitude, double longitude) {
+		return latitude != NO_COORDINATE && longitude != NO_COORDINATE;
+	}
+
+	public class myLocationListener implements LocationListener {
+
 		@Override
-		public void handleRequest(ServiceFilterRequest request, NextServiceFilterCallback nextServiceFilterCallback,
-				final ServiceFilterResponseCallback responseCallback) {
-			runOnUiThread(new Runnable() {
+		public void onLocationChanged(Location location) {
+			if(location != null)
+			{
+				oldLong = myLong;
+				oldLat = myLat;
+				myLong = location.getLongitude();
+				myLat = location.getLatitude();
 
-				@Override
-				public void run() {
-					if (mProgressBar != null) mProgressBar.setVisibility(ProgressBar.VISIBLE);
+				if (coordinatesAvailable(myLat, myLong)) {
+					textLat.setText("My latitude: " + Double.toString(myLat));
+					textLong.setText("My longitude: " + Double.toString(myLong));
 				}
-			});
-			
-			nextServiceFilterCallback.onNext(request, new ServiceFilterResponseCallback() {
-				
-				@Override
-				public void onResponse(ServiceFilterResponse response, Exception exception) {
-					runOnUiThread(new Runnable() {
 
-						@Override
-						public void run() {
-							if (mProgressBar != null) mProgressBar.setVisibility(ProgressBar.GONE);
-						}
-					});
-					
-					if (responseCallback != null)  responseCallback.onResponse(response, exception);
+				if (coordinatesAvailable(palLat, palLong)) {
+					textPalLat.setText("Pal latitude: " + Double.toString(palLat));
+					textPalLong.setText("Pal longitude: " + Double.toString(palLong));
 				}
-			});
+
+				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
+					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
+					textDist.setText("Distance: " + Double.toString(distance));
+
+					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
+					textPalBearing.setText("Bearing to pal: " + Double.toString(palBearing));
+				}
+
+				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(oldLat, oldLong)) {
+					currentBearing = Calculations.calculateBearing(myLat, myLong, oldLat, oldLong);
+					textCurrentBearing.setText("Current bearing: " + Double.toString(currentBearing));
+				}
+
+			}		
+		}
+
+		@Override
+		public void onProviderDisabled(String arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onProviderEnabled(String arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+			// TODO Auto-generated method stub
 		}
 	}
 }
+
+
