@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+//import android.widget.Button;
+import android.widget.ImageButton;
+//import android.widget.TextView;
 
 public class Main extends Activity {
 	
@@ -16,7 +17,7 @@ public class Main extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_screen);    
 
-        Button fndFriend = (Button) findViewById(R.id.friendsPos);
+        ImageButton fndFriend = (ImageButton) findViewById(R.id.fbLogIn);
     
         //Listening to first button's event
         fndFriend.setOnClickListener(new View.OnClickListener() {
@@ -32,17 +33,17 @@ public class Main extends Activity {
         	}
         });
    
-        Button sendPos = (Button) findViewById(R.id.myPos);
-    
-        //Listening to second button's event
-        sendPos.setOnClickListener(new View.OnClickListener() {
-    	
-        	public void onClick(View arg1) {
-        		TextView positionSent = (TextView)findViewById(R.id.posSent);
-        		positionSent.setText("Position sent to database.");
-    
-        	}
-        });
+//        Button sendPos = (Button) findViewById(R.id.posSent);
+//    
+//        //Listening to second button's event
+//        sendPos.setOnClickListener(new View.OnClickListener() {
+//    	
+//        	public void onClick(View arg1) {
+//        		TextView positionSent = (TextView)findViewById(R.id.posSent);
+//        		positionSent.setText("Position sent to database.");
+//    
+//        	}
+//        });
    }
 }
 
