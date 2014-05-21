@@ -82,6 +82,7 @@
         android:gravity="center"
         android:src="@drawable/arrow"
         android:visibility="gone" />
+    
 
     <LinearLayout
         android:id="@+id/LinearLayout2"
