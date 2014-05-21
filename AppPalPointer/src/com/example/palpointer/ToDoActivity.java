@@ -438,7 +438,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		// Start the animation
 		
 		if (greenArrow){
-			image.setImageResource(R.drawable);
+			image.setImageResource(R.drawable...);
 			image.startAnimation(ra);
 			currentDegree = -degree;
 		}
