@@ -112,7 +112,7 @@
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android1:text="FindPal" />
+            android1:text="changeNr" />
        
         <!--
         <Button

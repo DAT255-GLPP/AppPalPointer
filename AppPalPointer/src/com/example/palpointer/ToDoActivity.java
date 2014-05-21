@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
@@ -205,7 +206,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		displayPos.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View arg1) {
-				displayPalsPosition();
+				updatePhoneNumber();
 
 			}
 		});
@@ -330,6 +331,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				});
 			}
 		});
+		alert.show();
 	}
 	
 	
@@ -362,27 +364,27 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 
-	public void displayPalsPosition(){
-		download = new UpdatingThreads(this, item, "download");
-
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-		alert.setTitle("Search Friend");
-		alert.setMessage("Please state friends phone number");
-
-		// Set an EditText view to get user input 
-		final EditText input = new EditText(this);
-		alert.setView(input);
-
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				phoneNumber = input.getText().toString();
-				download.start();
-			}
-		});
-		alert.show();
-
-	}
+//	public void displayPalsPosition(){
+//		download = new UpdatingThreads(this, item, "download");
+//
+//		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//
+//		alert.setTitle("Search Friend");
+//		alert.setMessage("Please state friends phone number");
+//
+//		// Set an EditText view to get user input 
+//		final EditText input = new EditText(this);
+//		alert.setView(input);
+//
+//		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//			public void onClick(DialogInterface dialog, int whichButton) {
+//				phoneNumber = input.getText().toString();
+//				download.start();
+//			}
+//		});
+//		alert.show();
+//
+//	}
 
 	public MobileServiceTable<UserInformation> getTable(){
 		return mToDoTable;
@@ -490,15 +492,17 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					Exception exception, ServiceFilterResponse response) {
 				user = tempuser;
 				if (exception == null) {
-					createAndShowDialog(String.format(
-							"You are now logged in - %1$2s",
-							user.getUserId()), "Success");
+					Toast.makeText(getBaseContext(),  "You are now logged in!",  Toast.LENGTH_SHORT).show();
 					// createTable();
 					checkIfPhoneNumberExists();
 					Authenticate.setClient(mClient);
 					
 				} else {
-					createAndShowDialog("You must log in. Login Required", "Error");
+					Toast.makeText(getBaseContext(),  "Error during login",  Toast.LENGTH_SHORT).show();
+					//Starting a new Intent
+					Intent intent = new Intent(getApplicationContext(), Main.class);
+					//Sending data to another Activity
+					startActivity(intent);
 				}
 			}
 		});
