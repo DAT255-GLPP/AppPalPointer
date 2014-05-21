@@ -73,6 +73,7 @@ public class ContactEdit extends Activity {
 				handler.open();
 				handler.deleteData(contact.getName());
 				handler.close();
+				Toast.makeText(getBaseContext(),  "Contact deleted",  Toast.LENGTH_LONG).show();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
