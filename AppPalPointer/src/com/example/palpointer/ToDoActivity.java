@@ -42,17 +42,8 @@ import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
 public class ToDoActivity extends Activity implements SensorEventListener{
 
-	TextView textLat;
-	TextView textLong;
-	TextView textPalLat;
-	TextView textPalLong;
 	TextView textDist;
-	TextView textCurrentBearing;
-	TextView textPalBearing;
 	ImageView imageViewCompass;
-//	ImageView imageViewCompassGreen;
-//	ImageView imageViewCompassRed;
-	
 
 	double NO_COORDINATE = -1000;
 	double oldLat = NO_COORDINATE;
@@ -60,7 +51,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	double myLat = NO_COORDINATE;
 	double myLong = NO_COORDINATE;
 	double distance = 0;
-	double currentBearing = 0;
 	double palBearing = 0;
 	double palLat = NO_COORDINATE;
 	double palLong = NO_COORDINATE;
@@ -76,13 +66,13 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	UpdatingThreads download;
 	UpdatingThreads upload;
-	
+
 	boolean isAutethenticated = false;
-	
+
 	boolean compassIsVisible = false;
-	
+
 	boolean gpsIsAccurate = false;
-	
+
 	boolean greenArrow = false;
 	boolean redArrow = false;
 
@@ -100,20 +90,14 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	/**
 	 * Initializes the activity
 	 */
-	//CompassStart
 	// define the display assembly compass picture
 	private ImageView image;
-//	private ImageView imageGreen;
-//	private ImageView imageRed;
 
 	// record the compass picture angle turned
 	private float currentDegree = 0f;
 
 	// device sensor manager
 	private SensorManager mSensorManager;
-
-	TextView tvHeading;
-	//CompassEnd
 
 	public MobileServiceUser user;
 	UserInformation item;
@@ -123,18 +107,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do);
 		setCompassLayout();
-		
-		textLat = (TextView)findViewById(R.id.textLat);
-		textLong = (TextView)findViewById(R.id.textLong);
-		textPalLat = (TextView)findViewById(R.id.textPalLat);
-		textPalLong = (TextView)findViewById(R.id.textPalLong);
-		textDist = (TextView)findViewById(R.id.textDist);
-		textCurrentBearing = (TextView)findViewById(R.id.textCurrentBearing);
-		textPalBearing = (TextView)findViewById(R.id.textPalBearing);
-		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
-//		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewGreen);
-//		imageViewCompassGreen = (ImageView)findViewById(R.id.imageViewRed);
 
+		textDist = (TextView)findViewById(R.id.textDist);
+		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
+		
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
@@ -142,10 +118,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		try {
 			// Create the Mobile Service Client instance, using the provided
 			// Mobile Service URL and key
-			
+
 			mClient = Authenticate.getClient();
 			item = Authenticate.getUser();
-			
+
 			if ((mClient == null) && (user == null)){
 				mClient = new MobileServiceClient(
 						"https://palpointer.azure-mobile.net/",
@@ -155,7 +131,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				authenticate();
 				createTable();
 			}
-			
+
 			else if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
 				createTable();
 				contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
@@ -163,18 +139,18 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			}
 		}
 
-			//autenticate the user
-			
+		//autenticate the user
+
 
 		catch (MalformedURLException e) {
 			createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
 		}
-		
-		
 
-		Button gp = (Button) findViewById(R.id.gp);
+
+
+		Button findPal = (Button) findViewById(R.id.findpal);
 		//Listening to first button's event
-		gp.setOnClickListener(new View.OnClickListener() {
+		findPal.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
 				//Starting a new Intent
 				Intent contactScreen = new Intent(getApplicationContext(), ContactList.class);
@@ -182,24 +158,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				startActivity(contactScreen);
 			}
 		});
-
-		//		Button back = (Button) findViewById(R.id.goBack);
-		//
-		//	    
-		//        //Listening to first button's event
-		//        back.setOnClickListener(new View.OnClickListener() {
-		//    	
-		//        	public void onClick(View arg0) {
-		//        		
-		//        		//Starting a new Intent
-		//        		Intent firstScreen = new Intent(getApplicationContext(), Main.class);
-		//        		
-		//
-		//        		//Sending data to another Activity
-		//        		startActivity(firstScreen);
-		//        	}
-		//        });     
-
+   
 		Button displayPos = (Button) findViewById(R.id.display);
 
 		//Listening to second button's event
@@ -210,33 +169,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 			}
 		});
-		
-		
-		
-		
-//		if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
-//			while (!isAutethenticated){
-//				try {
-//					Thread.sleep(1 * 1000);
-//				}
-//				catch (InterruptedException e){
-//					
-//				}
-//			}
-//			contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
-//			startDownloadingPalsPosition();
-//		}
 	}
-	
-//	public void onStart(){
-//while (!isAutethenticated){
-//			
-//		}
-//		
-//	}
-
-
-
 
 	public void checkIfPhoneNumberExists(){
 		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
@@ -246,14 +179,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				if (exception == null) {
 
 					if (entity.isEmpty()){
-						//doesPhoneNumberExist = false;
 						item = new UserInformation();
 						Authenticate.setUser(item);
 						setIdAndPhoneNumber();	
 					}
-					else{					
-						//doesPhoneNumberExist = true;					
-						//fetchOldTableRow();	
+					else{						
 						item = entity.get(0);
 						Authenticate.setUser(item);
 					}
@@ -301,9 +231,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		});
 		alert.show();
 	}	
-	
-	
-	
+
+
+
 	public void updatePhoneNumber(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -318,73 +248,30 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
 				item.setPhoneNumber(value);
-				
+
 				mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
-					
+
 					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
 
 						if (exception != null) {
 							createAndShowDialog(exception, "Error");
 						}
-						
+
 					}
 				});
 			}
 		});
 		alert.show();
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	public static void setNr (String nr){
 		contactNr = nr;
 	}
 
-
 	public void startDownloadingPalsPosition(){
-//		if (download.isAlive()){
-//			download.setWhileLoopStatus(false);
-//		}
-//		while (download.isAlive()){
-//			try {
-//				Thread.sleep(5 * 100);
-//			}
-//			catch (InterruptedException e){
-//				
-//			}
-//		}
-		
 		download = new UpdatingThreads(this, item, "download");
 		download.start();
 	}
-
-
-//	public void displayPalsPosition(){
-//		download = new UpdatingThreads(this, item, "download");
-//
-//		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//
-//		alert.setTitle("Search Friend");
-//		alert.setMessage("Please state friends phone number");
-//
-//		// Set an EditText view to get user input 
-//		final EditText input = new EditText(this);
-//		alert.setView(input);
-//
-//		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//			public void onClick(DialogInterface dialog, int whichButton) {
-//				phoneNumber = input.getText().toString();
-//				download.start();
-//			}
-//		});
-//		alert.show();
-//
-//	}
 
 	public MobileServiceTable<UserInformation> getTable(){
 		return mToDoTable;
@@ -405,24 +292,22 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		}
 	}
 
-	public void stopDownloadingCoordinates(View view){
-		if (!(download == null))
-			download.setWhileLoopStatus(false); 
+	public void stopUploadingCoordinates(View view){
+		if (!(upload == null)) {
+			download.setWhileLoopStatus(false);
+			Toast.makeText(getBaseContext(),  "You are no longer uploading your coordinates!",  Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	public void setCompassLayout(){
 		// our compass image
 		image = (ImageView) findViewById(R.id.imageViewCompass);
-//		imageGreen = (ImageView) findViewById(R.id.imageViewGreen);
-//		imageRed = (ImageView) findViewById(R.id.imageViewRed);
-		// TextView that will tell the user what degree is he heading
-		tvHeading = (TextView) findViewById(R.id.tvHeading);
 
 		// initialize your android device sensor capabilities
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -451,15 +336,15 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			setCompassVisible(true);
 			compassIsVisible = true;
 		}
-		
+
 		float degree = 0;
-		
+
 		if (!(contactNumber == null) && gpsIsAccurate && coordinatesAvailable(palLat, palLong)){
 			// get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
 
-		tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
+		//		tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
 
 		// create a rotation animation (reverse turn degree degrees)
 		RotateAnimation ra = new RotateAnimation(
@@ -476,7 +361,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		ra.setFillAfter(true);
 
 		// Start the animation
-		
+
 		image.startAnimation(ra);
 		currentDegree = -degree;
 	}
@@ -496,7 +381,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					// createTable();
 					checkIfPhoneNumberExists();
 					Authenticate.setClient(mClient);
-					
+
 				} else {
 					Toast.makeText(getBaseContext(),  "Error during login",  Toast.LENGTH_SHORT).show();
 					//Starting a new Intent
@@ -513,18 +398,18 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		// Get the Mobile Service Table instance to use
 		mToDoTable = mClient.getTable(UserInformation.class);
-
-		// Load the items from the Mobile Service
-		// refreshItemsFromTable();
 	}
 
 	public void startUploadOwnCoordinates(View view){
 		if (coordinatesAvailable(myLat, myLong)) {
 			upload = new UpdatingThreads(this, item, "upload");
 			upload.start();
+			Toast.makeText(getBaseContext(),  "You are now uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
-		else
-			createAndShowDialog("No coordinates available", "Try again");
+		else{
+			Toast.makeText(getBaseContext(),  "Coordinates not available, not uploading!",  Toast.LENGTH_SHORT).show();
+		}
+
 	}
 
 	public double getLatitude(){
@@ -575,28 +460,28 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		@Override
 		public void onLocationChanged(Location location) {
-			
+
 			if (!gpsIsAccurate){
 				if (location.getAccuracy() <= 100){
 					gpsIsAccurate = true;
 				}
 			}
-			
+
 			if (!(contactNumber == null) && coordinatesAvailable(palLat, palLong)){
-			
+
 				if (location.getAccuracy() <= 30){
 					image.setImageResource(R.drawable.arrow_green);
 					greenArrow = true;
 					redArrow = false;
 				}
-				
+
 				else {
 					image.setImageResource(R.drawable.arrow_red);
 					redArrow = true;
 					greenArrow = false;
 				}
 			}
-			
+
 			if(location != null)
 			{
 				oldLong = myLong;
@@ -604,28 +489,28 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				myLong = location.getLongitude();
 				myLat = location.getLatitude();
 
-				if (coordinatesAvailable(myLat, myLong)) {
-					textLat.setText("My latitude: " + Double.toString(myLat));
-					textLong.setText("My longitude: " + Double.toString(myLong));
-				}
-
-				if (coordinatesAvailable(palLat, palLong)) {
-					textPalLat.setText("Pal latitude: " + Double.toString(palLat));
-					textPalLong.setText("Pal longitude: " + Double.toString(palLong));
-				}
+				//				if (coordinatesAvailable(myLat, myLong)) {
+				//					textLat.setText("My latitude: " + Double.toString(myLat));
+				//					textLong.setText("My longitude: " + Double.toString(myLong));
+				//				}
+				//
+				//				if (coordinatesAvailable(palLat, palLong)) {
+				//					textPalLat.setText("Pal latitude: " + Double.toString(palLat));
+				//					textPalLong.setText("Pal longitude: " + Double.toString(palLong));
+				//				}
 
 				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
 					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
 					textDist.setText("Distance: " + Double.toString(distance));
 
 					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
-					textPalBearing.setText("Bearing to pal: " + Double.toString(palBearing));
+					//					textPalBearing.setText("Bearing to pal: " + Double.toString(palBearing));
 				}
 
-				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(oldLat, oldLong)) {
-					currentBearing = Calculations.calculateBearing(myLat, myLong, oldLat, oldLong);
-					textCurrentBearing.setText("Current bearing: " + Double.toString(currentBearing));
-				}
+				//				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(oldLat, oldLong)) {
+				//					currentBearing = Calculations.calculateBearing(myLat, myLong, oldLat, oldLong);
+				//					textCurrentBearing.setText("Current bearing: " + Double.toString(currentBearing));
+				//				}
 
 			}		
 		}

@@ -7,72 +7,12 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textLat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My latitude: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textLong"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My longitude: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textPalLat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pal latitude: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textPalLong"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pal longitude: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
         android:id="@+id/textDist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Distance: "
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textCurrentBearing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Current bearing: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/textPalBearing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bearing to pal: "
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/tvHeading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center"
-        android:text="Heading: 0.0"
-        android:visibility="invisible" />
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/imageViewCompass"
@@ -82,7 +22,6 @@
         android:gravity="center"
         android:src="@drawable/arrow"
         android:visibility="gone" />
-    
 
     <LinearLayout
         android:id="@+id/LinearLayout2"
@@ -91,20 +30,21 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/buttonAddToDo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/add_button_text"
-            android1:onClick="startUploadOwnCoordinates" />
-
-        <Button
-            android1:id="@+id/button2"
+            android1:id="@+id/addbutton"
             style="?android:attr/buttonStyleSmall"
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android1:onClick="stopDownloadingCoordinates"
+            android1:onClick="startUploadOwnCoordinates"
+            android1:text="Start" />
+
+        <Button
+            android1:id="@+id/stopbutton"
+            style="?android:attr/buttonStyleSmall"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android1:onClick="stopUploadingCoordinates"
             android1:text="Stop" />
 
         <Button
@@ -113,22 +53,13 @@
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android1:text="changeNr" />
-       
-        <!--
-        <Button
-            android:id="@+id/goBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="Back to Start" />
-        -->
 
         <Button
-            android:id="@+id/gp"
+            android:id="@+id/findpal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:text="GP" />
+            android:text="FindPal" />
     </LinearLayout>
 
 </LinearLayout>

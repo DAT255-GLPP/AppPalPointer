@@ -15,7 +15,7 @@ public class UpdatingThreads extends Thread {
 	private ToDoActivity theActivity;
 	private UserInformation item;
 	private String nameOfThread;
-	private boolean executeWhileLoop = true;
+	private boolean executeWhileLoop;
 	private boolean palsCoordinatesDownloaded = false;
 	private boolean ownCoordinatesUploaded = false;
 	
@@ -41,7 +41,8 @@ public class UpdatingThreads extends Thread {
 	
 	
 	private void downloadPalsCoordinates(){
-		try{	
+		try{
+			executeWhileLoop = true;
 			while (executeWhileLoop){
 				palsCoordinatesDownloaded = false;
 				theActivity.getTable().where().field("phonenumber").eq(ToDoActivity.getRequestedPhoneNumber()).execute(new TableQueryCallback<UserInformation>() {
@@ -86,6 +87,7 @@ public class UpdatingThreads extends Thread {
 	public void uploadOwnCoordinates(){
 		
 		try {
+			executeWhileLoop = true;
 			while(executeWhileLoop){
 				ownCoordinatesUploaded = false;
 				
