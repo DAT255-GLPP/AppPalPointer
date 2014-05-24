@@ -2,27 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/background" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_gravity="center"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:background="#c8e0ff"
+        android:text="To point towards someone, choose between existing pals or add a new."
+        android:textColor="#0e2367"
+        android:textSize="16sp"
+        android:typeface="serif" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="Contacts"
-            android:textSize="30sp" />
-
-        <Button
-            android:id="@+id/addcontact"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:hint="Add new contact" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="154dp"
+        android:layout_height="48dp"
+        android:layout_gravity="left"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/mypals" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,7 +35,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
+
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/addcontact"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="14dp"
+        android:text="Add a New Pal"
+        android:textColor="#0e2367"
+        android:typeface="serif" />
+<!-- <Button
+        android:id="@+id/editContact"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="Edit Existing Pal"
+        android:textColor="#0e2367"
+        android:typeface="serif" /> -->
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:background="#c8e0ff"
+        android:text="To edit or erase existing pal, click long on the name of the pal."
+        android:textColor="#0e2367"
+        android:textSize="12sp"
+        android:typeface="serif" />
+    
 
 </LinearLayout>

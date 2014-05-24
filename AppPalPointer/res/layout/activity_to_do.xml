@@ -4,21 +4,30 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/background"  >
 
     <TextView
         android:id="@+id/textDist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Distance: "
+        android:layout_marginTop="15dp"
+        android1:layout_gravity="center"
+        android:text="Distance to Pal: "
+        android:textColor="#0e2367"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="20sp" />
-
+        android:textSize="20sp"
+        android:typeface="serif"
+        android:textStyle="bold" />
+<!-- Lägg till så inte denna text syns förrän vi har en distance android:visibility="gone" -->
+    
     <ImageView
         android:id="@+id/imageViewCompass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="45dp"
         android:gravity="center"
         android:src="@drawable/arrow"
         android:visibility="gone" />
@@ -29,6 +38,18 @@
         android:layout_height="match_parent"
         android:orientation="horizontal" >
 
+         <Button
+            android:id="@+id/findpal"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="Find Pal"
+            android:textColor="#0e2367"
+            android:textSize="13sp"
+            android:typeface="serif"
+            android:layout_weight="1" />
+         
         <Button
             android1:id="@+id/addbutton"
             style="?android:attr/buttonStyleSmall"
@@ -36,7 +57,11 @@
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android1:onClick="startUploadOwnCoordinates"
-            android1:text="Start" />
+            android1:text="Start"
+            android:textColor="#0e2367"
+            android:typeface="serif"
+            android:textSize="13sp" 
+            android:layout_weight="1"  />
 
         <Button
             android1:id="@+id/stopbutton"
@@ -45,21 +70,26 @@
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android1:onClick="stopUploadingCoordinates"
-            android1:text="Stop" />
+            android1:text="Stop"
+            android:typeface="serif" 
+            android:textColor="#0e2367"
+            android:textSize="13sp"
+            android:layout_weight="1"  />
 
         <Button
             android1:id="@+id/display"
+            style="?android:attr/buttonStyleSmall"
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android1:text="changeNr" />
+            android1:text="Change Number"
+            android:typeface="serif"  
+            android:textColor="#0e2367"
+            android:textSize="13sp" 
+            android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/findpal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="FindPal" />
+       
+
     </LinearLayout>
 
 </LinearLayout>

@@ -8,6 +8,8 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,6 +59,17 @@ public class ContactList extends Activity {
 				startActivity(intent);
 			}
 		});
+		
+//		Button editContact = (Button) findViewById(R.id.editContact);
+//		//Listening to first button's event
+//		editContact.setOnClickListener(new View.OnClickListener() {
+//			public void onClick(View arg0) {
+//				//Starting a new Intent
+//				Intent intent = new Intent(getApplicationContext(), ContactEdit.class);
+//				//Sending data to another Activity
+//				startActivity(intent);
+//			}
+//		});
 	}
 
 	public void displayContactlist (){
@@ -64,9 +77,14 @@ public class ContactList extends Activity {
 		for(Contact c : contactlist) {
 			//contact = c;
 			TextView nameView = new TextView(this);
-			nameView.setText(c.getName());
+			nameView.setText(c.getName()+"\n");
 			nameView.setTextSize(20);
 			nameView.setHeight(40);
+			nameView.setTypeface(Typeface.SERIF);
+			//nameView.setPadding(6, 3, 0, 3);
+			nameView.setTextColor(Color.parseColor("#0e2367"));
+			
+			
 			
 			nameView.setOnClickListener(new DynamicOnClickListener(c) {
 				public void onClick(View v) {
