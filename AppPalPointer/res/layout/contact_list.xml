@@ -5,19 +5,6 @@
     android:background="@drawable/background"
     android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:layout_marginTop="6dp"
-        android:background="#c8e0ff"
-        android:text="To point towards someone, choose between existing pals or add a new."
-        android:textColor="#0e2367"
-        android:textSize="16sp"
-        android:typeface="serif" />
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="154dp"
@@ -51,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginTop="14dp"
-            android:text="Add a New Pal"
+            android:text="Add pal"
             android:textColor="#0e2367"
             android:typeface="serif" />
 

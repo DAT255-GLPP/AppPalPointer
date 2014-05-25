@@ -39,6 +39,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	TextView textDist;
 	ImageView imageViewCompass;
+	ToggleButton toggleButton;
 
 	double NO_COORDINATE = -1000;
 	double oldLat = NO_COORDINATE;
@@ -105,7 +106,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		textDist = (TextView)findViewById(R.id.textDist);
 		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
-
+		toggleButton = (ToggleButton)findViewById(R.id.toggleButton);
+		
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
@@ -162,6 +164,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 			}
 		});
+		
+		if (Authenticate.getUploadThread() != null) {
+			toggleButton.setChecked(true);
+		}
 	}
 
 	public void checkIfPhoneNumberExists(){
