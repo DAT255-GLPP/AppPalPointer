@@ -38,6 +38,7 @@ public class ContactAdd extends Activity {
 					handler.open();
 					long id = handler.insertData(name, nr);
 					handler.close();
+					
 					//Starting a new Intent
 					Intent intent = new Intent(getApplicationContext(), ContactList.class);
 					//Sending data to another Activity

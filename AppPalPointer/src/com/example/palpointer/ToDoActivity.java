@@ -1,11 +1,13 @@
 package com.example.palpointer;
 
-
-import static com.microsoft.windowsazure.mobileservices.MobileServiceQueryOperations.*;
-
 import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.MobileServiceAuthenticationProvider;
 import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
+import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
+import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
 import java.net.MalformedURLException;
 import java.util.List;
@@ -14,8 +16,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-
-
 import android.content.DialogInterface;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -33,12 +33,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
-import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
-import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
-import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
-import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
+import android.widget.ToggleButton;
 
 public class ToDoActivity extends Activity implements SensorEventListener{
 
@@ -50,7 +45,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	double oldLong = NO_COORDINATE;
 	double myLat = NO_COORDINATE;
 	double myLong = NO_COORDINATE;
-	double distance = 0;
+	int distance = 0;
 	double palBearing = 0;
 	double palLat = NO_COORDINATE;
 	double palLong = NO_COORDINATE;
@@ -110,7 +105,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		textDist = (TextView)findViewById(R.id.textDist);
 		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
-		
+
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
@@ -146,8 +141,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
 		}
 
-
-
 		Button findPal = (Button) findViewById(R.id.findpal);
 		//Listening to first button's event
 		findPal.setOnClickListener(new View.OnClickListener() {
@@ -158,7 +151,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				startActivity(contactScreen);
 			}
 		});
-   
+
 		Button displayPos = (Button) findViewById(R.id.display);
 
 		//Listening to second button's event
@@ -231,8 +224,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		});
 		alert.show();
 	}	
-
-
 
 	public void updatePhoneNumber(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -349,9 +340,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			// get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
-
-		//		tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
-
+		
 		// create a rotation animation (reverse turn degree degrees)
 		RotateAnimation ra = new RotateAnimation(
 				currentDegree, 
@@ -367,7 +356,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		ra.setFillAfter(true);
 
 		// Start the animation
-
 		image.startAnimation(ra);
 		currentDegree = -degree;
 	}
@@ -414,12 +402,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			Authenticate.setUploadThread(upload);
 			Toast.makeText(getBaseContext(),  "You are now uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
-		else if (!coordinatesAvailable(myLat, myLong) && upload == null){
+		else if (!coordinatesAvailable(myLat, myLong)){
 			Toast.makeText(getBaseContext(),  "Coordinates not available, not uploading!",  Toast.LENGTH_SHORT).show();
+			((ToggleButton) view).setChecked(false);
 		}
-		else if (upload != null){
-			Toast.makeText(getBaseContext(),  "You are already uploading your coordinates",  Toast.LENGTH_SHORT).show();
-		}
+
 
 	}
 
@@ -467,6 +454,17 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		return latitude != NO_COORDINATE && longitude != NO_COORDINATE;
 	}
 
+	public void onToggleClicked (View view) {
+		boolean on = ((ToggleButton) view).isChecked();
+
+		if (on) {
+			startUploadOwnCoordinates(view);
+		}
+		else {
+			stopUploadingCoordinates(view);
+		}
+	}
+
 	public class myLocationListener implements LocationListener {
 
 		@Override
@@ -500,29 +498,12 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				myLong = location.getLongitude();
 				myLat = location.getLatitude();
 
-				//				if (coordinatesAvailable(myLat, myLong)) {
-				//					textLat.setText("My latitude: " + Double.toString(myLat));
-				//					textLong.setText("My longitude: " + Double.toString(myLong));
-				//				}
-				//
-				//				if (coordinatesAvailable(palLat, palLong)) {
-				//					textPalLat.setText("Pal latitude: " + Double.toString(palLat));
-				//					textPalLong.setText("Pal longitude: " + Double.toString(palLong));
-				//				}
-
 				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
 					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
-					textDist.setText("Distance: " + Double.toString(distance));
+					textDist.setText("Distance to pal: " + Integer.toString(distance) + " meters.");
 
 					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
-					//					textPalBearing.setText("Bearing to pal: " + Double.toString(palBearing));
 				}
-
-				//				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(oldLat, oldLong)) {
-				//					currentBearing = Calculations.calculateBearing(myLat, myLong, oldLat, oldLong);
-				//					textCurrentBearing.setText("Current bearing: " + Double.toString(currentBearing));
-				//				}
-
 			}		
 		}
 

@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/background" >
+    android:background="@drawable/background"
+    android:orientation="vertical" >
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,41 +35,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/addcontact"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:layout_marginTop="14dp"
-        android:text="Add a New Pal"
-        android:textColor="#0e2367"
-        android:typeface="serif" />
-<!-- <Button
-        android:id="@+id/editContact"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:text="Edit Existing Pal"
-        android:textColor="#0e2367"
-        android:typeface="serif" /> -->
-        <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:layout_marginTop="6dp"
-        android:background="#c8e0ff"
-        android:text="To edit or erase existing pal, click long on the name of the pal."
-        android:textColor="#0e2367"
-        android:textSize="12sp"
-        android:typeface="serif" />
-    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/addcontact"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="14dp"
+            android:text="Add a New Pal"
+            android:textColor="#0e2367"
+            android:typeface="serif" />
+
+        <Button
+            android:id="@+id/contactlistInfo"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="14dp"
+            android:onClick="informUser"
+            android:text="Info"
+            android:textColor="#0e2367"
+            android:typeface="serif" />
+    </LinearLayout>
 
 </LinearLayout>

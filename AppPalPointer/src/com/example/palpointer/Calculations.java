@@ -2,17 +2,16 @@ package com.example.palpointer;
 
 public class Calculations {
 
-	public static double calculateDistance (double Lat1, double Long1, double Lat2, double Long2){
+	public static int calculateDistance (double Lat1, double Long1, double Lat2, double Long2){
 
 		double radius = 6371000;
 		double dLat = Math.toRadians(Lat1 - Lat2);
 		double dLong = Math.toRadians(Long2 - Long1);
-		
 		double a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
 				Math.cos(Math.toRadians(Lat1)) * Math.cos(Math.toRadians(Lat2)) *
 				Math.sin(dLong/2) * Math.sin(dLong/2);
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-		return radius * c;
+		return (int) Math.round(radius * c);
 	}
 	
 	public static double calculateBearing (double Lat2, double Long2, double Lat1, double Long1){
