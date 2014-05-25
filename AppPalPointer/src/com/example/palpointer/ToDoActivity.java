@@ -296,6 +296,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		upload = Authenticate.getUploadThread();
 		if (upload != null){
 			upload.setWhileLoopStatus(false);
+			upload = null;
+			Authenticate.setUploadThread(upload);
 			Toast.makeText(getBaseContext(),  "You are no longer uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
 		else {
