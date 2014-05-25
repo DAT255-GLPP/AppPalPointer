@@ -100,7 +100,7 @@ public class ContactList extends Activity {
 	}
 	
 	public void informUser(View view){
-		Toast.makeText(getBaseContext(),  "Click on the pal you want to find.\nLongclick to edit or erase pal.",  Toast.LENGTH_LONG).show();
+		Toast.makeText(getBaseContext(),  "Click on the pal you want to find.\nLongclick to edit or erase pal.",  Toast.LENGTH_SHORT).show();
 	}
 	
 }
