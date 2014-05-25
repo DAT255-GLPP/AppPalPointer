@@ -23,11 +23,9 @@
     
     <ImageView
         android:id="@+id/imageViewCompass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="45dp"
-        android:layout_marginBottom="45dp"
         android:gravity="center"
         android:src="@drawable/arrow"
         android:visibility="gone" />

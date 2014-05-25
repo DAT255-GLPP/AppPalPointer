@@ -293,9 +293,13 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void stopUploadingCoordinates(View view){
-		if (!(upload == null)) {
-			download.setWhileLoopStatus(false);
+		upload = Authenticate.getUploadThread();
+		if (upload != null){
+			upload.setWhileLoopStatus(false);
 			Toast.makeText(getBaseContext(),  "You are no longer uploading your coordinates!",  Toast.LENGTH_SHORT).show();
+		}
+		else {
+			Toast.makeText(getBaseContext(),  "You have not started to upload your coordinates yet",  Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -401,13 +405,18 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void startUploadOwnCoordinates(View view){
-		if (coordinatesAvailable(myLat, myLong)) {
+		upload = Authenticate.getUploadThread();
+		if (coordinatesAvailable(myLat, myLong) && upload == null) {
 			upload = new UpdatingThreads(this, item, "upload");
 			upload.start();
+			Authenticate.setUploadThread(upload);
 			Toast.makeText(getBaseContext(),  "You are now uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
-		else{
+		else if (!coordinatesAvailable(myLat, myLong) && upload == null){
 			Toast.makeText(getBaseContext(),  "Coordinates not available, not uploading!",  Toast.LENGTH_SHORT).show();
+		}
+		else if (upload != null){
+			Toast.makeText(getBaseContext(),  "You are already uploading your coordinates",  Toast.LENGTH_SHORT).show();
 		}
 
 	}

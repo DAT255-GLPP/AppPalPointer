@@ -11,6 +11,8 @@ public class Authenticate{
 	
 	private static UserInformation mUser;
 	
+	private static UpdatingThreads upload;
+	
 	public static void setClient(MobileServiceClient theClient){
 		mClient = theClient;
 	}
@@ -25,6 +27,14 @@ public class Authenticate{
 	
 	public static UserInformation getUser(){
 		return mUser;
+	}
+	
+	public static void setUploadThread(UpdatingThreads uploadingThread){
+		upload = uploadingThread;
+	}
+	
+	public static UpdatingThreads getUploadThread(){
+		return upload;
 	}
 	
 }
