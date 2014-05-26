@@ -23,8 +23,9 @@
 
     <ImageView
         android:id="@+id/imageViewCompass"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="45dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:src="@drawable/arrow"
@@ -40,7 +41,7 @@
             android:id="@+id/findpal"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:text="Pals"
@@ -51,19 +52,24 @@
         <ToggleButton
             android1:id="@+id/toggleButton"
             android1:layout_width="wrap_content"
-            android1:layout_height="wrap_content"
+            android1:layout_height="55dp"
             android:layout_gravity="bottom"
+            
             android1:layout_weight="1"
             android:onClick="onToggleClicked"
             android:textOff="Upload position"
             android:textOn="Stop uploading position"
+            android:textColor="#0e2367"
+            android:textSize="13sp"
+            android:typeface="serif"
+            android:layout_marginBottom="3dp"
             android1:text="ToggleButton" />
 
         <Button
             android1:id="@+id/display"
             style="?android:attr/buttonStyleSmall"
             android1:layout_width="wrap_content"
-            android1:layout_height="wrap_content"
+            android1:layout_height="55dp"
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:textColor="#0e2367"

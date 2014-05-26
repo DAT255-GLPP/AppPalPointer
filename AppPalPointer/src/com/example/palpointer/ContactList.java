@@ -66,9 +66,9 @@ public class ContactList extends Activity {
 		LinearLayout ll = (LinearLayout) findViewById(R.id.contactlist);
 		for(Contact c : contactlist) {
 			TextView nameView = new TextView(this);
-			nameView.setText(c.getName()+"\n");
+			nameView.setText(c.getName());
 			nameView.setTextSize(20);
-			nameView.setHeight(40);
+			nameView.setHeight(30);
 			nameView.setTypeface(Typeface.SERIF);
 			//nameView.setPadding(6, 3, 0, 3);
 			nameView.setTextColor(Color.parseColor("#0e2367"));
