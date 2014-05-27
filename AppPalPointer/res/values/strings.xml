@@ -9,5 +9,6 @@
     <string name="my_position">Send My Position</string>
     <string name="friends_position">Find A Friend</string>
     <string name="pal_pointer">PalPointer</string>
+    <string name="login_text">Log in with your facebook account</string>
     
 </resources>

@@ -11,7 +11,7 @@
         android:layout_height="48dp"
         android:layout_gravity="left"
         android:layout_marginTop="15dp"
-        android:src="@drawable/mypals" />
+        android:src="@drawable/mypals_heading" />
 
     <ScrollView
         android:layout_width="match_parent"

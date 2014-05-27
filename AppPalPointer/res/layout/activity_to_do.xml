@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:src="@drawable/arrow"
+            android:src="@drawable/arrow_black"
             android:visibility="gone"
             android:adjustViewBounds="true" />
         </LinearLayout>

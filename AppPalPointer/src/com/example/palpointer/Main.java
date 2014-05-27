@@ -4,46 +4,28 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
-//import android.widget.Button;
 import android.widget.ImageButton;
-//import android.widget.TextView;
 
-public class Main extends Activity {
-	
-	
+public class Main extends Activity {	
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.start_screen);    
+        setContentView(R.layout.main);    
 
-        ImageButton fndFriend = (ImageButton) findViewById(R.id.fbLogIn);
+        ImageButton loginButton = (ImageButton) findViewById(R.id.loginButton);
     
-        //Listening to first button's event
-        fndFriend.setOnClickListener(new View.OnClickListener() {
-    	
+        //Listening to the button's event
+        loginButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View arg0) {
         		
         		//Starting a new Intent
-        		Intent nextScreen = new Intent(getApplicationContext(), ToDoActivity.class);
-        		
+        		Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);     		
 
         		//Sending data to another Activity
-        		startActivity(nextScreen);
+        		startActivity(intent);
         	}
         });
-   
-//        Button sendPos = (Button) findViewById(R.id.posSent);
-//    
-//        //Listening to second button's event
-//        sendPos.setOnClickListener(new View.OnClickListener() {
-//    	
-//        	public void onClick(View arg1) {
-//        		TextView positionSent = (TextView)findViewById(R.id.posSent);
-//        		positionSent.setText("Position sent to database.");
-//    
-//        	}
-//        });
    }
 }
 
