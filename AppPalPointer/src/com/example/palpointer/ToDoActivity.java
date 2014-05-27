@@ -71,6 +71,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	boolean greenArrow = false;
 	boolean redArrow = false;
+	double precisionOfGps;
 
 
 	/**
@@ -472,28 +473,22 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public class myLocationListener implements LocationListener {
+		float[] resultArray = new float[3];
 
 		@Override
 		public void onLocationChanged(Location location) {
 
-			if (!gpsIsAccurate){
+			if (!gpsIsAccurate && contactNumber != null){
 				if (location.getAccuracy() <= 100){
 					gpsIsAccurate = true;
-				}
-			}
-
-			if (!(contactNumber == null) && coordinatesAvailable(palLat, palLong)){
-
-				if (location.getAccuracy() <= 30){
-					image.setImageResource(R.drawable.arrow_green);
-					greenArrow = true;
-					redArrow = false;
-				}
-
-				else {
-					image.setImageResource(R.drawable.arrow_red);
-					redArrow = true;
-					greenArrow = false;
+					precisionOfGps = location.getAccuracy();
+					if (precisionOfGps <= 30){
+						image.setImageResource(R.drawable.arrow_green);
+					}
+					else {
+						image.setImageResource(R.drawable.arrow_red);
+					}
+					
 				}
 			}
 
@@ -503,14 +498,38 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				oldLat = myLat;
 				myLong = location.getLongitude();
 				myLat = location.getLatitude();
-
+				
 				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
-					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
+					
+					Location.distanceBetween(myLat, myLong, palLat, palLong, resultArray);
+					
+					distance = Math.round(resultArray[0]);
+					
+//					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
 					textDist.setText("Distance to pal: " + Integer.toString(distance) + " meters.");
+					
+					palBearing = Math.round(resultArray[1]);
 
-					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
+//					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
 				}
-			}		
+			}	
+			
+			if (contactNumber != null && coordinatesAvailable(palLat, palLong)){
+
+				if (precisionOfGps > 30 && location.getAccuracy() <= 30){
+					image.setImageResource(R.drawable.arrow_green);
+					greenArrow = true;
+					redArrow = false;
+					precisionOfGps = location.getAccuracy();
+				}
+
+				else if (precisionOfGps <= 30 && location.getAccuracy() > 30) {
+					image.setImageResource(R.drawable.arrow_red);
+					redArrow = true;
+					greenArrow = false;
+					precisionOfGps = location.getAccuracy();
+				}
+			}
 		}
 
 		@Override
