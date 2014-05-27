@@ -9,9 +9,10 @@
 
     <TextView
         android:id="@+id/textDist"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:layout_weight="1"
         android1:layout_gravity="center"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -19,29 +20,36 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:typeface="serif" />
-    <!-- Lägg till så inte denna text syns förrän vi har en distance android:visibility="gone" -->
-
-    <ImageView
-        android:id="@+id/imageViewCompass"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="45dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:src="@drawable/arrow"
-        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/LinearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/imageViewCompass"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:src="@drawable/arrow"
+            android:visibility="gone"
+            android:adjustViewBounds="true" />
+        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:orientation="horizontal" >
 
         <Button
             android:id="@+id/findpal"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
+            android:layout_height="fill_parent"
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:text="Pals"
@@ -51,31 +59,29 @@
 
         <ToggleButton
             android1:id="@+id/toggleButton"
-            android1:layout_width="wrap_content"
-            android1:layout_height="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_gravity="bottom"
-            
-            android1:layout_weight="1"
+            android1:layout_weight="2"
             android:onClick="onToggleClicked"
+            android:textColor="#0e2367"
             android:textOff="Upload position"
             android:textOn="Stop uploading position"
-            android:textColor="#0e2367"
             android:textSize="13sp"
             android:typeface="serif"
-            android:layout_marginBottom="3dp"
             android1:text="ToggleButton" />
 
         <Button
             android1:id="@+id/display"
             style="?android:attr/buttonStyleSmall"
-            android1:layout_width="wrap_content"
-            android1:layout_height="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:textColor="#0e2367"
             android:textSize="13sp"
             android:typeface="serif"
-            android1:text="Change Number" />
+            android1:text="Change Nr" />
     </LinearLayout>
 
 </LinearLayout>

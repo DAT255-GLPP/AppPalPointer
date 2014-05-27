@@ -29,7 +29,6 @@ public class ContactList extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contact_list);
-		Toast.makeText(getBaseContext(),  "Click on the pal you want to find.\nLongclick to edit or erase pal.",  Toast.LENGTH_SHORT).show();
 		handler = new DataHandler(getBaseContext());
 		handler.open();
 		Cursor C = handler.returnData();
@@ -68,7 +67,7 @@ public class ContactList extends Activity {
 			TextView nameView = new TextView(this);
 			nameView.setText(c.getName());
 			nameView.setTextSize(20);
-			nameView.setHeight(30);
+			nameView.setHeight(25);
 			nameView.setTypeface(Typeface.SERIF);
 			//nameView.setPadding(6, 3, 0, 3);
 			nameView.setTextColor(Color.parseColor("#0e2367"));
