@@ -43,7 +43,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	final static double NO_COORDINATE = -1000;
 	final static float HIGH_ACCURACY = 30;
 	final static float LOW_ACCURACY = 100;
-
+	
 	double oldLat = NO_COORDINATE;
 	double oldLong = NO_COORDINATE;
 	double myLat = NO_COORDINATE;
@@ -128,17 +128,12 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				authenticate();
 				createTable();
 			}
-
 			else if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
 				createTable();
 				contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
 				startDownloadingPalsPosition();
 			}
 		}
-
-		//autenticate the user
-
-
 		catch (MalformedURLException e) {
 			createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
 		}
@@ -185,9 +180,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 						item = entity.get(0);
 						Authenticate.setUser(item);
 					}
-
 				}
-
 				else {
 					createAndShowDialog(exception, "checkPhoneNumber");
 				}		
@@ -197,7 +190,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	public void setIdAndPhoneNumber() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
+		alert.setCancelable(false);
 		alert.setTitle("Update information");
 		alert.setMessage("Please register your phone number");
 
@@ -208,23 +201,37 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
-				// Do something with value!
 
-				item.setUserId(user.getUserId());
-				item.setPhoneNumber(value);
+				if (value.equals("")) {
+					Toast.makeText(getBaseContext(),  "You must enter a phonenumber",  Toast.LENGTH_SHORT).show();
+					setIdAndPhoneNumber();
+				}
+				else if (!value.matches("[0-9]+")) {
+					Toast.makeText(getBaseContext(),  "Only digits are allowed",  Toast.LENGTH_SHORT).show();
+					setIdAndPhoneNumber();
+				}
+				else if (value.length() != 10) {
+					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
+					setIdAndPhoneNumber();
+				}
+				else {
+					item.setUserId(user.getUserId());
+					item.setPhoneNumber(value);
 
-				mToDoTable.insert(item, new TableOperationCallback<UserInformation>() {
+					mToDoTable.insert(item, new TableOperationCallback<UserInformation>() {
 
-					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
+						public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
 
-						if (exception == null) {
+							if (exception == null) {
 
-						} else {
-							createAndShowDialog(exception, "Error");
+							} else {
+								createAndShowDialog(exception, "Error");
+							}
+
 						}
-
-					}
-				});	  
+					});
+					Toast.makeText(getBaseContext(),  "Number " + value + " registered",  Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		alert.show();
