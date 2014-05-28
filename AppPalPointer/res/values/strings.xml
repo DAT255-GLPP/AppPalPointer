@@ -10,5 +10,9 @@
     <string name="friends_position">Find A Friend</string>
     <string name="pal_pointer">PalPointer</string>
     <string name="login_text">Log in with your facebook account</string>
+    <string name="pals_button">Pals</string>
+    <string name="toggle_on">Stop uploading position</string>
+    <string name="toggle_off">Upload position</string>
+    <string name="change_number">Change Nr</string>
     
 </resources>

@@ -37,19 +37,22 @@ import android.widget.ToggleButton;
 
 public class ToDoActivity extends Activity implements SensorEventListener{
 
-	TextView textDist;
-	ImageView imageViewCompass;
+	TextView textDistance;
 	ToggleButton toggleButton;
 
-	double NO_COORDINATE = -1000;
+	final static double NO_COORDINATE = -1000;
+	final static float HIGH_ACCURACY = 30;
+	final static float LOW_ACCURACY = 100;
+
 	double oldLat = NO_COORDINATE;
 	double oldLong = NO_COORDINATE;
 	double myLat = NO_COORDINATE;
 	double myLong = NO_COORDINATE;
-	int distance = 0;
-	double palBearing = 0;
 	double palLat = NO_COORDINATE;
 	double palLong = NO_COORDINATE;
+	double palBearing = 0;
+	int distance = 0;
+	double precisionOfGps;
 
 	boolean keepUploadingCoordinates = false;
 	boolean keepDownloadingPalsCoordinates = false;
@@ -57,13 +60,12 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	Thread threadForUploadingOwnCoordinates;
 	Thread threadForUploadingPalsCoordinates;
 	String phoneNumber;
-	public static String contactNr;
 	public static String contactNumber;
 
 	UpdatingThreads download;
 	UpdatingThreads upload;
 
-	boolean isAutethenticated = false;
+	//boolean isAutethenticated = false;
 
 	boolean compassIsVisible = false;
 
@@ -71,8 +73,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	boolean greenArrow = false;
 	boolean redArrow = false;
-	double precisionOfGps;
-
 
 	/**
 	 * Mobile Service Client reference
@@ -88,7 +88,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	 * Initializes the activity
 	 */
 	// define the display assembly compass picture
-	private ImageView image;
+	private ImageView arrowImage;
 
 	// record the compass picture angle turned
 	private float currentDegree = 0f;
@@ -105,10 +105,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		setContentView(R.layout.activity_to_do);
 		setCompassLayout();
 
-		textDist = (TextView)findViewById(R.id.textDist);
-		imageViewCompass = (ImageView)findViewById(R.id.imageViewCompass);
+		textDistance = (TextView)findViewById(R.id.textDistance);
 		toggleButton = (ToggleButton)findViewById(R.id.toggleButton);
-		
+
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
@@ -144,9 +143,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
 		}
 
-		Button findPal = (Button) findViewById(R.id.findpal);
+		Button palsButton = (Button) findViewById(R.id.palsButton);
 		//Listening to first button's event
-		findPal.setOnClickListener(new View.OnClickListener() {
+		palsButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
 				//Starting a new Intent
 				Intent contactScreen = new Intent(getApplicationContext(), ContactList.class);
@@ -155,17 +154,16 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			}
 		});
 
-		Button displayPos = (Button) findViewById(R.id.display);
+		Button changeNumber = (Button) findViewById(R.id.changeNumber);
 
 		//Listening to second button's event
-		displayPos.setOnClickListener(new View.OnClickListener() {
+		changeNumber.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View arg1) {
 				updatePhoneNumber();
-
 			}
 		});
-		
+
 		if (Authenticate.getUploadThread() != null) {
 			toggleButton.setChecked(true);
 		}
@@ -236,7 +234,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 		alert.setTitle("Update information");
-		alert.setMessage("Please register your phone number");
+		alert.setMessage("Enter your new phonenumber");
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(this);
@@ -245,25 +243,36 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
-				item.setPhoneNumber(value);
 
-				mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
+				if (value.equals("")) {
+					Toast.makeText(getBaseContext(),  "You must enter a phonenumber",  Toast.LENGTH_SHORT).show();
+				}
 
-					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
+				else if (!value.matches("[0-9]+")) {
+					Toast.makeText(getBaseContext(),  "Only digits are allowed",  Toast.LENGTH_SHORT).show();
+				}
 
-						if (exception != null) {
-							createAndShowDialog(exception, "Error");
+				else if (value.length() != 10) {
+					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
+				}
+
+				else {
+					item.setPhoneNumber(value);
+
+					mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
+
+						public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
+
+							if (exception != null) {
+								createAndShowDialog(exception, "Error");
+							}
 						}
-
-					}
-				});
+					});
+					Toast.makeText(getBaseContext(),  "Your number has been updated to " + value,  Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		alert.show();
-	}
-
-	public static void setNr (String nr){
-		contactNr = nr;
 	}
 
 	public void startDownloadingPalsPosition(){
@@ -286,7 +295,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	public void setCompassVisible(boolean value){
 		if (value == true){
-			imageViewCompass.setVisibility(View.VISIBLE);
+			arrowImage.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -305,7 +314,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	public void setCompassLayout(){
 		// our compass image
-		image = (ImageView) findViewById(R.id.imageViewCompass);
+		arrowImage = (ImageView) findViewById(R.id.arrow);
 
 		// initialize your android device sensor capabilities
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -343,11 +352,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		float degree = 0;
 
-		if (!(contactNumber == null) && gpsIsAccurate && coordinatesAvailable(palLat, palLong)){
+		if (contactNumber != null && gpsIsAccurate && coordinatesAvailable(palLat, palLong)){
 			// get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
-		
+
 		// create a rotation animation (reverse turn degree degrees)
 		RotateAnimation ra = new RotateAnimation(
 				currentDegree, 
@@ -363,7 +372,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		ra.setFillAfter(true);
 
 		// Start the animation
-		image.startAnimation(ra);
+		arrowImage.startAnimation(ra);
 		currentDegree = -degree;
 	}
 
@@ -475,56 +484,60 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public class myLocationListener implements LocationListener {
 		float[] resultArray = new float[3];
 
+		public void updateCoordinates(Location location){
+			oldLong = myLong;
+			oldLat = myLat;
+			myLong = location.getLongitude();
+			myLat = location.getLatitude();	
+		}
+
+		public void updateDistance(Location location){
+			if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
+
+				Location.distanceBetween(myLat, myLong, palLat, palLong, resultArray);
+				distance = Math.round(resultArray[0]);
+				textDistance.setText("Distance to pal: " + Integer.toString(distance) + " meters.");
+
+				palBearing = Math.round(resultArray[1]);
+			}
+		}
+
 		@Override
 		public void onLocationChanged(Location location) {
 
+			if (contactNumber != null && location.getAccuracy() <= LOW_ACCURACY) {
+				gpsIsAccurate = true;
+			}
+
 			if (!gpsIsAccurate && contactNumber != null){
-				if (location.getAccuracy() <= 100){
+				if (location.getAccuracy() <= LOW_ACCURACY){
 					gpsIsAccurate = true;
 					precisionOfGps = location.getAccuracy();
-					if (precisionOfGps <= 30){
-						image.setImageResource(R.drawable.arrow_green);
+					if (precisionOfGps <= HIGH_ACCURACY){
+						arrowImage.setImageResource(R.drawable.arrow_green);
 					}
 					else {
-						image.setImageResource(R.drawable.arrow_red);
+						arrowImage.setImageResource(R.drawable.arrow_red);
 					}
-					
 				}
 			}
 
-			if(location != null)
-			{
-				oldLong = myLong;
-				oldLat = myLat;
-				myLong = location.getLongitude();
-				myLat = location.getLatitude();
-				
-				if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
-					
-					Location.distanceBetween(myLat, myLong, palLat, palLong, resultArray);
-					
-					distance = Math.round(resultArray[0]);
-					
-//					distance = Calculations.calculateDistance(myLat, myLong, palLat, palLong);
-					textDist.setText("Distance to pal: " + Integer.toString(distance) + " meters.");
-					
-					palBearing = Math.round(resultArray[1]);
+			if (location != null) {
+				updateCoordinates(location);
+				updateDistance(location);
+			}
 
-//					palBearing = Calculations.calculateBearing(palLat, palLong, myLat, myLong);
-				}
-			}	
-			
 			if (contactNumber != null && coordinatesAvailable(palLat, palLong)){
 
-				if (precisionOfGps > 30 && location.getAccuracy() <= 30){
-					image.setImageResource(R.drawable.arrow_green);
+				if (precisionOfGps > HIGH_ACCURACY && location.getAccuracy() <= HIGH_ACCURACY){
+					arrowImage.setImageResource(R.drawable.arrow_green);
 					greenArrow = true;
 					redArrow = false;
 					precisionOfGps = location.getAccuracy();
 				}
 
-				else if (precisionOfGps <= 30 && location.getAccuracy() > 30) {
-					image.setImageResource(R.drawable.arrow_red);
+				else if (precisionOfGps <= HIGH_ACCURACY && location.getAccuracy() > HIGH_ACCURACY) {
+					arrowImage.setImageResource(R.drawable.arrow_red);
 					redArrow = true;
 					greenArrow = false;
 					precisionOfGps = location.getAccuracy();
