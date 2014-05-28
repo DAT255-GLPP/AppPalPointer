@@ -102,4 +102,10 @@ public class ContactList extends Activity {
 		Toast.makeText(getBaseContext(),  "Click on the pal you want to find.\nLongclick to edit or erase pal.",  Toast.LENGTH_SHORT).show();
 	}
 	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);
+		startActivity(intent);
+	}
+	
 }

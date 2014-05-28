@@ -25,6 +25,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.view.View;
@@ -163,6 +164,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			toggleButton.setChecked(true);
 		}
 	}
+	
+	
 
 	public void checkIfPhoneNumberExists(){
 		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
@@ -196,6 +199,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(this);
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -245,6 +249,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(this);
+		input.setInputType(InputType.TYPE_CLASS_NUMBER);
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -326,6 +331,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		// initialize your android device sensor capabilities
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+	}
+	
+	@Override
+	public void onBackPressed() {
 	}
 
 	@Override

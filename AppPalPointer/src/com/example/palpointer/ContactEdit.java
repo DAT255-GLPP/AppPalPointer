@@ -49,14 +49,14 @@ public class ContactEdit extends Activity {
 				}
 				else if (!name.matches("") && nr.matches("")) {
 					nr = contact.getNr();
-					Toast.makeText(getBaseContext(),  "Contact name changed",  Toast.LENGTH_SHORT).show();
+					Toast.makeText(getBaseContext(),  "Contact name changed to " + name,  Toast.LENGTH_SHORT).show();
 				}
 				else if (name.matches("") && !nr.matches("")) {
 					name = contact.getName();
-					Toast.makeText(getBaseContext(),  "Contact number changed",  Toast.LENGTH_SHORT).show();
+					Toast.makeText(getBaseContext(),  "Contact number changed to " + nr,  Toast.LENGTH_SHORT).show();
 				}
 				else {
-					Toast.makeText(getBaseContext(),  "Contact name and number changed",  Toast.LENGTH_SHORT).show();
+					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + nr,  Toast.LENGTH_SHORT).show();
 				}
 				handler.updateData(contact.getName(), name, nr);
 				handler.close();
