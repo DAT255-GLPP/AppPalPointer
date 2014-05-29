@@ -4,11 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Contact implements Parcelable {
-	String name;
-	String nr;
+	private String name;
+	private String nr;
 		public Contact (String name, String nr){
 			this.name = name;
 			this.nr = nr;
+		}
+		
+		public Contact(Parcel in) {
+			String[] data = new String[2];
+			in.readStringArray(data);
+			this.name = data[0];
+			this.nr = data[1];
 		}
 		
 		public String getName (){
@@ -25,13 +32,6 @@ public class Contact implements Parcelable {
 		
 		public void setNr (String nr){
 			this.nr = nr;
-		}
-		
-		public Contact(Parcel in) {
-			String[] data = new String[2];
-			in.readStringArray(data);
-			this.name = data[0];
-			this.nr = data[1];
 		}
 		
 		public int describeContents(){

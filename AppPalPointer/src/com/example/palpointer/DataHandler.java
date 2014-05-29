@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataHandler {
-	public static final String NAME = "name";
-	public static final String PHONE = "phone";
-	public static final String TABLE_NAME = "mytable";
-	public static final String DATA_BASE_NAME = "mydatabase";
-	public static final int DATABASE_VERSION = 1;
-	public static final String TABLE_CREATE = "create table mytable (name text not null primary key, phone text not null);";
+	private static final String NAME = "name";
+	private static final String PHONE = "phone";
+	private static final String TABLE_NAME = "mytable";
+	private static final String DATA_BASE_NAME = "mydatabase";
+	private static final int DATABASE_VERSION = 1;
+	private static final String TABLE_CREATE = "create table mytable (name text not null primary key, phone text not null);";
 
 	DataBaseHelper dbhelper;
 	Context ctx;

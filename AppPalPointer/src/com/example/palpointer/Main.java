@@ -32,8 +32,3 @@ public class Main extends Activity {
 	public void onBackPressed() {
 	}
 }
-
-
-
-
-

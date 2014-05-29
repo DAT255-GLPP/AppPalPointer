@@ -38,12 +38,12 @@ import android.widget.ToggleButton;
 
 public class ToDoActivity extends Activity implements SensorEventListener{
 
-	TextView textDistance;
-	ToggleButton toggleButton;
+	private TextView textDistance;
+	private ToggleButton toggleButton;
 
-	final static double NO_COORDINATE = -1000;
-	final static float HIGH_ACCURACY = 30;
-	final static float LOW_ACCURACY = 100;
+	private final static double NO_COORDINATE = -1000;
+	private final static float HIGH_ACCURACY = 30;
+	private final static float LOW_ACCURACY = 100;
 
 	double oldLat = NO_COORDINATE;
 	double oldLong = NO_COORDINATE;
@@ -61,16 +61,14 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	Thread threadForUploadingOwnCoordinates;
 	Thread threadForUploadingPalsCoordinates;
 	String phoneNumber;
-	public static String contactNumber;
+	private static String contactNumber;
 
 	UpdatingThreads download;
 	UpdatingThreads upload;
 
-	//boolean isAutethenticated = false;
+	private boolean compassIsVisible = false;
 
-	boolean compassIsVisible = false;
-
-	boolean gpsIsAccurate = false;
+	private boolean gpsIsAccurate = false;
 
 	boolean greenArrow = false;
 	boolean redArrow = false;
@@ -549,13 +547,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		@Override
 		public void onLocationChanged(Location location) {
-
 			if (location != null) {
 				setInitialArrowColor(location);
 				updateCoordinates(location);
 				updateDistance(location);
 				updateArrowColor(location);
-
 			}
 		}
 

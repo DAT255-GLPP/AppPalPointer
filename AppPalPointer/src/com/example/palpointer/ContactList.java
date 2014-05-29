@@ -12,8 +12,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,9 +19,8 @@ import android.widget.Toast;
 
 public class ContactList extends Activity {
 
-	public DataHandler handler;
-	public List<Contact> contactlist = new ArrayList<Contact>();
-	public ToDoActivity toDoActivity;
+	private DataHandler handler;
+	private List<Contact> contactlist = new ArrayList<Contact>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +46,9 @@ public class ContactList extends Activity {
 		
 		displayContactlist();
 		
-		Button addcontact = (Button) findViewById(R.id.addcontact);
+		Button AddContact = (Button) findViewById(R.id.addcontact);
 		//Listening to first button's event
-		addcontact.setOnClickListener(new View.OnClickListener() {
+		AddContact.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactAdd.class);
