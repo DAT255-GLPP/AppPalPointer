@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 
 public class DynamicOnLongClickListener implements OnLongClickListener {
-	public Contact contact;
+	private Contact contact;
 	public DynamicOnLongClickListener (Contact contact) {
 		this.contact = contact;
 	}

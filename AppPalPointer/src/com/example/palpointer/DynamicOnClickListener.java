@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 public class DynamicOnClickListener implements OnClickListener {
-	public Contact contact;
+	private Contact contact;
 	public DynamicOnClickListener (Contact contact) {
 		this.contact = contact;
 	}

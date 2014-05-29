@@ -12,15 +12,15 @@ import android.widget.Toast;
 
 public class ContactEdit extends Activity {
 
-	public EditText ContactName;
-	public EditText ContactNr;
-	public TextView ContactInfo;
-	public Button SaveEdit;
-	public Button DeleteContact;
-	public String name ="";
-	public String nr ="";
-	public DataHandler handler;
-	public Contact contact;
+	private EditText ContactName;
+	private EditText ContactNr;
+	private TextView ContactInfo;
+	private Button SaveEdit;
+	private Button DeleteContact;
+	private String name ="";
+	private String phonenumber ="";
+	private DataHandler handler;
+	private Contact contact;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,26 +39,26 @@ public class ContactEdit extends Activity {
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
-				nr = ContactNr.getText().toString();			
+				phonenumber = ContactNr.getText().toString();			
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-				if (name.matches("") && nr.matches("")) {
+				if (name.matches("") && phonenumber.matches("")) {
 					name = contact.getName();
-					nr = contact.getNr();
+					phonenumber = contact.getNr();
 					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_SHORT).show();
 				}
-				else if (!name.matches("") && nr.matches("")) {
-					nr = contact.getNr();
+				else if (!name.matches("") && phonenumber.matches("")) {
+					phonenumber = contact.getNr();
 					Toast.makeText(getBaseContext(),  "Contact name changed to " + name,  Toast.LENGTH_SHORT).show();
 				}
-				else if (name.matches("") && !nr.matches("")) {
+				else if (name.matches("") && !phonenumber.matches("")) {
 					name = contact.getName();
-					Toast.makeText(getBaseContext(),  "Contact number changed to " + nr,  Toast.LENGTH_SHORT).show();
+					Toast.makeText(getBaseContext(),  "Contact number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
 				}
 				else {
-					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + nr,  Toast.LENGTH_SHORT).show();
+					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
 				}
-				handler.updateData(contact.getName(), name, nr);
+				handler.updateData(contact.getName(), name, phonenumber);
 				handler.close();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
