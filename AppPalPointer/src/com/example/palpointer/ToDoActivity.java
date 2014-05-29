@@ -44,7 +44,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	final static double NO_COORDINATE = -1000;
 	final static float HIGH_ACCURACY = 30;
 	final static float LOW_ACCURACY = 100;
-	
+
 	double oldLat = NO_COORDINATE;
 	double oldLong = NO_COORDINATE;
 	double myLat = NO_COORDINATE;
@@ -164,8 +164,6 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			toggleButton.setChecked(true);
 		}
 	}
-	
-	
 
 	public void checkIfPhoneNumberExists(){
 		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
@@ -330,9 +328,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		// initialize your android device sensor capabilities
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 	}
@@ -500,6 +497,19 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public class myLocationListener implements LocationListener {
 		float[] resultArray = new float[3];
 
+		public void setInitialArrowColor(Location location) {
+			if (!gpsIsAccurate && contactNumber != null && location.getAccuracy() <= LOW_ACCURACY) {
+				gpsIsAccurate = true;
+				precisionOfGps = location.getAccuracy();
+				if (precisionOfGps <= HIGH_ACCURACY) {
+					arrowImage.setImageResource(R.drawable.arrow_green);
+				}
+				else {
+					arrowImage.setImageResource(R.drawable.arrow_red);
+				}
+			}
+		}
+
 		public void updateCoordinates(Location location){
 			oldLong = myLong;
 			oldLat = myLat;
@@ -518,31 +528,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			}
 		}
 
-		@Override
-		public void onLocationChanged(Location location) {
-
-			if (contactNumber != null && location.getAccuracy() <= LOW_ACCURACY) {
-				gpsIsAccurate = true;
-			}
-
-			if (!gpsIsAccurate && contactNumber != null){
-				if (location.getAccuracy() <= LOW_ACCURACY){
-					gpsIsAccurate = true;
-					precisionOfGps = location.getAccuracy();
-					if (precisionOfGps <= HIGH_ACCURACY){
-						arrowImage.setImageResource(R.drawable.arrow_green);
-					}
-					else {
-						arrowImage.setImageResource(R.drawable.arrow_red);
-					}
-				}
-			}
-
-			if (location != null) {
-				updateCoordinates(location);
-				updateDistance(location);
-			}
-
+		public void updateArrowColor(Location location){
 			if (contactNumber != null && coordinatesAvailable(palLat, palLong)){
 
 				if (precisionOfGps > HIGH_ACCURACY && location.getAccuracy() <= HIGH_ACCURACY){
@@ -558,6 +544,18 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					greenArrow = false;
 					precisionOfGps = location.getAccuracy();
 				}
+			}
+		}
+
+		@Override
+		public void onLocationChanged(Location location) {
+
+			if (location != null) {
+				setInitialArrowColor(location);
+				updateCoordinates(location);
+				updateDistance(location);
+				updateArrowColor(location);
+
 			}
 		}
 
