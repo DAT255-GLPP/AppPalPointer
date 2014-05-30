@@ -4,13 +4,13 @@ package com.example.palpointer;
  * Represents an item in a ToDo list
  */
 public class UserInformation {
-	
+
 	/**
 	 * Item latitude
 	 */
 	@com.google.gson.annotations.SerializedName("latitude")
 	private double latitude = -1000;
-	
+
 	/**
 	 * Item longitude
 	 */
@@ -28,17 +28,17 @@ public class UserInformation {
 	 */
 	@com.google.gson.annotations.SerializedName("userid")
 	private String userId;
-	
+
 	/**
 	 * phoneNumber
 	 */
 	@com.google.gson.annotations.SerializedName("phonenumber")
 	private String phoneNumber;
 
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * ToDoItem constructor
 	 */
@@ -46,7 +46,7 @@ public class UserInformation {
 
 	}
 
-	
+
 	/**
 	 * Sets the latitude
 	 * 
@@ -56,11 +56,11 @@ public class UserInformation {
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
-	
+
 	public double getLatitude (){
 		return this.latitude;
 	}
-	
+
 	/**
 	 * Sets the longitude
 	 * 
@@ -70,7 +70,7 @@ public class UserInformation {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	
+
 	public double getLongitude (){
 		return this.longitude;
 	}
@@ -81,7 +81,7 @@ public class UserInformation {
 	public String getId() {
 		return mId;
 	}
-	
+
 	/**
 	 * Sets the item id
 	 * 
@@ -101,15 +101,15 @@ public class UserInformation {
 	public final void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
+
 	/**
 	 * Returns the userId
 	 */
 	public String getUserId() {
 		return this.userId;
 	}
-	
-	
+
+
 	/**
 	 * Sets the phoneNumber
 	 * 
@@ -119,7 +119,7 @@ public class UserInformation {
 	public final void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	
+
 	/**
 	 * Returns the userId
 	 */
@@ -127,11 +127,4 @@ public class UserInformation {
 		return this.phoneNumber;
 	}
 
-
-
-
-//	@Override
-//	public boolean equals(Object o) {
-//		return o instanceof ToDoItem && ((ToDoItem) o).mId == mId;
-//	}
 }
