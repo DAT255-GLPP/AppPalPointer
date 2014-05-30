@@ -35,17 +35,12 @@ public class UserInformation {
 	@com.google.gson.annotations.SerializedName("phonenumber")
 	private String phoneNumber;
 
-
-
-
-
 	/**
 	 * ToDoItem constructor
 	 */
 	public UserInformation() {
 
 	}
-
 
 	/**
 	 * Sets the latitude

@@ -63,8 +63,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	String phoneNumber;
 	private static String contactNumber;
 
-	UpdatingThreads download;
-	UpdatingThreads upload;
+	UpdatingThreads downloadThread;
+	UpdatingThreads uploadThread;
 
 	private boolean compassIsVisible = false;
 
@@ -83,9 +83,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	 */
 	private MobileServiceTable<UserInformation> mToDoTable;	
 
-	/**
-	 * Initializes the activity
-	 */
+
 	// define the display assembly compass picture
 	private ImageView arrowImage;
 
@@ -97,7 +95,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	public MobileServiceUser user;
 	UserInformation item;
-
+	
+	/**
+	 * Initializes the activity
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -142,9 +143,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		palsButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
 				//Starting a new Intent
-				Intent contactScreen = new Intent(getApplicationContext(), ContactList.class);
+				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
-				startActivity(contactScreen);
+				startActivity(intent);
 			}
 		});
 
@@ -284,8 +285,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void startDownloadingPalsPosition(){
-		download = new UpdatingThreads(this, item, "download");
-		download.start();
+		downloadThread = new UpdatingThreads(this, item, "downloadThread");
+		downloadThread.start();
 	}
 
 	public MobileServiceTable<UserInformation> getTable(){
@@ -308,11 +309,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void stopUploadingCoordinates(View view){
-		upload = Authenticate.getUploadThread();
-		if (upload != null){
-			upload.setWhileLoopStatus(false);
-			upload = null;
-			Authenticate.setUploadThread(upload);
+		uploadThread = Authenticate.getUploadThread();
+		if (uploadThread != null){
+			uploadThread.setWhileLoopStatus(false);
+			uploadThread = null;
+			Authenticate.setUploadThread(uploadThread);
 			Toast.makeText(getBaseContext(),  "You are no longer uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
 		else {
@@ -422,11 +423,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void startUploadOwnCoordinates(View view){
-		upload = Authenticate.getUploadThread();
-		if (coordinatesAvailable(myLat, myLong) && upload == null) {
-			upload = new UpdatingThreads(this, item, "upload");
-			upload.start();
-			Authenticate.setUploadThread(upload);
+		uploadThread = Authenticate.getUploadThread();
+		if (coordinatesAvailable(myLat, myLong) && uploadThread == null) {
+			uploadThread = new UpdatingThreads(this, item, "uploadThread");
+			uploadThread.start();
+			Authenticate.setUploadThread(uploadThread);
 			Toast.makeText(getBaseContext(),  "You are now uploading your coordinates!",  Toast.LENGTH_SHORT).show();
 		}
 		else if (!coordinatesAvailable(myLat, myLong)){

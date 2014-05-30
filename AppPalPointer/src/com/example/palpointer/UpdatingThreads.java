@@ -1,15 +1,11 @@
 package com.example.palpointer;
 
 import java.util.List;
-
-import android.view.View;
 import android.widget.Toast;
 
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
-
-
 
 public class UpdatingThreads extends Thread {
 
@@ -29,17 +25,14 @@ public class UpdatingThreads extends Thread {
 
 
 	public void run(){
-		if (nameOfThread == "download"){
+		if (nameOfThread == "downloadThread"){
 			downloadPalsCoordinates();
 		}
 
-		else if (nameOfThread == "upload"){
+		else if (nameOfThread == "uploadThread"){
 			uploadOwnCoordinates();
 		}
 	}
-
-
-
 
 	private void downloadPalsCoordinates(){
 		try{
@@ -82,9 +75,6 @@ public class UpdatingThreads extends Thread {
 		}
 	}
 
-
-
-
 	public void uploadOwnCoordinates(){
 
 		try {
@@ -119,13 +109,7 @@ public class UpdatingThreads extends Thread {
 		}
 	}
 
-
-
-
-
 	public void setWhileLoopStatus(boolean executeWhileLoop){
 		this.executeWhileLoop = executeWhileLoop;
 	}
-
-
 }

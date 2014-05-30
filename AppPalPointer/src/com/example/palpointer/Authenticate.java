@@ -11,7 +11,7 @@ public class Authenticate{
 	
 	private static UserInformation mUser;
 	
-	private static UpdatingThreads upload;
+	private static UpdatingThreads uploadThread;
 	
 	public static void setClient(MobileServiceClient theClient){
 		mClient = theClient;
@@ -30,11 +30,11 @@ public class Authenticate{
 	}
 	
 	public static void setUploadThread(UpdatingThreads uploadingThread){
-		upload = uploadingThread;
+		uploadThread = uploadingThread;
 	}
 	
 	public static UpdatingThreads getUploadThread(){
-		return upload;
+		return uploadThread;
 	}
 	
 }

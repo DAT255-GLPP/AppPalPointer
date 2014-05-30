@@ -29,6 +29,7 @@ public class ContactAdd extends Activity {
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
 				phonenumber = ContactNr.getText().toString();	
+				//Insert contact info into SQLite if contact name and phonenumber has been filled in
 				if (!name.matches("") && !phonenumber.matches("")) {
 					Toast.makeText(getBaseContext(),  "Contact saved",  Toast.LENGTH_SHORT).show();
 					handler = new DataHandler(getBaseContext());
@@ -41,12 +42,15 @@ public class ContactAdd extends Activity {
 					//Sending data to another Activity
 					startActivity(intent);
 				}
+				//Inform the user that a phonenumber is necessary if no number has been given by the user
 				else if (!name.matches("") && phonenumber.matches("")) {
 					Toast.makeText(getBaseContext(),  "Contact number required",  Toast.LENGTH_SHORT).show();
 				}
+				//Inform the user that a contact name is necessary if no name has been given by the user
 				else if (name.matches("") && !phonenumber.matches("")) {
 					Toast.makeText(getBaseContext(),  "Contact name required",  Toast.LENGTH_SHORT).show();
 				}
+				//Inform the user that both a contact name and number is necessary if no name or number has been given by the user
 				else {
 					Toast.makeText(getBaseContext(),  "Contact name and number required",  Toast.LENGTH_SHORT).show();
 				}
