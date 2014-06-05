@@ -3,6 +3,9 @@ package com.example.palpointer;
 /**
  * Represents an item in a ToDo list
  */
+
+
+//Getter setter class 
 public class UserInformation {
 
 	/**
@@ -36,7 +39,7 @@ public class UserInformation {
 	private String phoneNumber;
 
 	/**
-	 * ToDoItem constructor
+	 * UserInformation constructor
 	 */
 	public UserInformation() {
 
@@ -108,15 +111,15 @@ public class UserInformation {
 	/**
 	 * Sets the phoneNumber
 	 * 
-	 * @param number
-	 *            number to set
+	 * @param phoneNumber
+	 *            phoneNumber to set
 	 */
 	public final void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 
 	/**
-	 * Returns the userId
+	 * Returns the phone number
 	 */
 	public String getPhoneNumber() {
 		return this.phoneNumber;

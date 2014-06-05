@@ -35,7 +35,9 @@ public class ContactEdit extends Activity {
 		Bundle data = getIntent().getExtras();
 		contact = (Contact) data.getParcelable("contact");
 		ContactInfo.setText("Contact name: " + contact.getName() + "\nContact nr: " + contact.getNr());
-
+		
+		
+		//Saving contact info into SQLite after editing
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -43,6 +45,10 @@ public class ContactEdit extends Activity {
 				phonenumber = ContactNr.getText().toString();			
 				handler = new DataHandler(getBaseContext());
 				handler.open();
+				
+				/*
+				 * Handling when the user does not give correct contact information
+				 */
 				if (name.matches("") && phonenumber.matches("")) {
 					name = contact.getName();
 					phonenumber = contact.getNr();
@@ -56,10 +62,15 @@ public class ContactEdit extends Activity {
 					name = contact.getName();
 					Toast.makeText(getBaseContext(),  "Contact number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
 				}
-				else {
-					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
+				else if (phonenumber.length() != 10) {
+					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
 				}
-				handler.updateData(contact.getName(), name, phonenumber);
+				else {
+					phonenumber = contact.getNr();
+					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
+				}				
+				//Update contact's information
+				handler.updateData(contact.getName(), contact.getNr(), name, phonenumber);
 				handler.close();
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
@@ -69,12 +80,14 @@ public class ContactEdit extends Activity {
 			}
 		});
 
+		
+		//Deleting contact from database on clicking delete button
 		DeleteContact.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-				handler.deleteData(contact.getName());
+				handler.deleteData(contact.getName(), contact.getNr());
 				handler.close();
 				Toast.makeText(getBaseContext(),  "Contact deleted",  Toast.LENGTH_SHORT).show();
 				//Starting a new Intent
@@ -86,6 +99,9 @@ public class ContactEdit extends Activity {
 		});		
 	}
 	
+	/**
+	 * Go back to contact list when back button is pressed and finish current activity
+	 */
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(getApplicationContext(), ContactList.class);

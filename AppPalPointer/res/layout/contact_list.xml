@@ -13,15 +13,14 @@
         android:layout_marginTop="15dp"
         android:src="@drawable/mypals_heading" />
 
-        <ListView
-            android:id="@+id/lvcontact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView1"
-            android:layout_above="@+id/ll1"
-            android:cacheColorHint="@android:color/transparent" >
-
-        </ListView>
+    <ListView
+        android:id="@+id/lvcontact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ll1"
+        android:layout_below="@+id/imageView1"
+        android:cacheColorHint="@android:color/transparent" >
+    </ListView>
 
     <LinearLayout
         android:id="@+id/ll1"
@@ -38,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_marginTop="14dp"
-            android:text="Add pal"
+            android:text="@string/add_pal"
             android:textColor="#0e2367"
             android:typeface="serif" />
 
@@ -50,7 +49,7 @@
             android:layout_gravity="right"
             android:layout_marginTop="14dp"
             android:onClick="informUser"
-            android:text="Info"
+            android:text="@string/info"
             android:textColor="#0e2367"
             android:typeface="serif" />
     </LinearLayout>

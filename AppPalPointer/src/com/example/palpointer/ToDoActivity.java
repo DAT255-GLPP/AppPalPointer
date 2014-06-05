@@ -132,7 +132,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 			mClient = Authenticate.getClient();
 			item = Authenticate.getUser();
-
+			
+			//Check if a client and user exists, if not then set them
 			if ((mClient == null) && (user == null)){
 				mClient = new MobileServiceClient(
 						"https://palpointer.azure-mobile.net/",
@@ -142,6 +143,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				authenticate();
 				createTable();
 			}
+			/*
+			 * If the intent hasExtra it means that we were sent to the activity by clicking on a 
+			 * contact so we start downloading the contact´s position
+			 */
 			else if (getIntent().hasExtra("com.example.palpointer.contactNr")) {
 				createTable();
 				contactNumber = getIntent().getStringExtra("com.example.palpointer.contactNr");
@@ -153,13 +158,12 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		}
 
 		Button palsButton = (Button) findViewById(R.id.palsButton);
-		//Listening to first button's event
+		//Listening to palsButton event
 		palsButton.setOnClickListener(new View.OnClickListener() {
+			//Go to contactlist when Pals button is clicked and finish current activity
 			@Override
 			public void onClick(View arg0) {
-				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
-				//Sending data to another Activity
 				startActivity(intent);
 				finish();
 			}
@@ -167,9 +171,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 		Button changeNumber = (Button) findViewById(R.id.changeNumber);
 
-		//Listening to second button's event
+		//Listening to Change Nr button
 		changeNumber.setOnClickListener(new View.OnClickListener() {
-
+			
+			//Run updatePhoneNumber method when Change Nr button is clicked
 			@Override
 			public void onClick(View arg1) {
 				updatePhoneNumber();
@@ -184,32 +189,40 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	
-	//Checking whether user already exists on Microsoft Azure Server
+	/**
+	 * Check if the user has a phone number registered.
+	 * If not, run setIdAndPhoneNumber() to register the user's phone number
+	 */
 	public void checkIfPhoneNumberExists(){
+		//Chooses the user
 		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
 
 			@Override
 			public void onCompleted(List<UserInformation> entity, int count, Exception exception, ServiceFilterResponse response) {
 				if (exception == null) {
-
+					
+					//If the id doesn't exist in the database, then add it and ask for phonenumber
 					if (entity.isEmpty()){
 						item = new UserInformation();
 						Authenticate.setUser(item);
 						setIdAndPhoneNumber();	
 					}
+					//If the id exists, set the user to the correct user
 					else{						
 						item = entity.get(0);
 						Authenticate.setUser(item);
 					}
 				}
 				else {
-					createAndShowDialog(exception, "checkPhoneNumber");
+					createAndShowDialog(exception, "Error");
 				}		
 			}
 		});
 	}
 
-	//Registering Phone Number for a user
+	/**
+	 * Adds users id and phonenumber to the database
+	 */
 	public void setIdAndPhoneNumber() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setCancelable(false);
@@ -225,7 +238,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
-
+				//Handle unacceptable phone number values
 				if (value.equals("")) {
 					Toast.makeText(getBaseContext(),  "You must enter a phonenumber",  Toast.LENGTH_SHORT).show();
 					setIdAndPhoneNumber();
@@ -238,6 +251,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
 					setIdAndPhoneNumber();
 				}
+				//If the values are acceptable, set the object's userId and phone number
 				else {
 					item.setUserId(user.getUserId());
 					item.setPhoneNumber(value);
@@ -263,7 +277,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.show();
 	}	
 
-	//Updating phone number for user on Server
+	/**
+	 * Update the user's phone number in the database
+	 */
 	public void updatePhoneNumber(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -279,7 +295,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
-
+				//Handle unacceptable phone number values
 				if (value.equals("")) {
 					Toast.makeText(getBaseContext(),  "You must enter a phonenumber",  Toast.LENGTH_SHORT).show();
 				}
@@ -291,11 +307,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				else if (value.length() != 10) {
 					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
 				}
-
+				
+				//If the phone number is acceptable, then update it in the database
 				else {
 					item.setPhoneNumber(value);
-					
-					
+								
 					mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
 
 						@Override
@@ -313,31 +329,48 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.show();
 	}
 
-	//Starting thread for uploading coordinates
+	/**
+	 * Starting thread for downloading coordinates
+	 */
 	public void startDownloadingPalsPosition(){
 		downloadThread = new UpdatingThreads(this, item, "downloadThread");
 		downloadThread.start();
 	}
 
+	/**
+	 * Returns the MobileServiceTable
+	 */
 	public MobileServiceTable<UserInformation> getTable(){
 		return mToDoTable;
 	}
-
+	
+	/**
+	 * Returns the contact's phone number
+	 */
 	public static String getRequestedPhoneNumber (){
 		return contactNumber;
 	}
 
+	/**
+	 * Sets the pal's position
+	 */
 	public void setPalsCoordinates(double palLat, double palLong){
 		this.palLat = palLat;
 		this.palLong = palLong;
 	}
-
+	
+	/**
+	 * Decide whether the compass should be visible on the screen or not
+	 */
 	public void setCompassVisible(boolean value){
 		if (value == true){
 			arrowImage.setVisibility(View.VISIBLE);
 		}
 	}
-
+	
+	/**
+	 * Stop uploading coordinates
+	 */
 	public void stopUploadingCoordinates(View view){
 		uploadThread = Authenticate.getUploadThread();
 		if (uploadThread != null){
@@ -352,14 +385,16 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	}
 
 	public void setCompassLayout(){
-		// our compass image
+		//Our compass image
 		arrowImage = (ImageView) findViewById(R.id.arrow);
 
-		// initialize your android device sensor capabilities
+		//Initialize the android device's sensor capabilities
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 	}
 
-	// Alert Dialog for exiting the application.
+	/**
+	 *  Alert Dialog for exiting the application when back button is pressed in the activity
+	 */
 	
 	@Override
 	public void onBackPressed() {
@@ -388,7 +423,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	protected void onResume() {
 		super.onResume();
 
-		// for the system's orientation sensor registered listeners
+		//For the system's orientation sensor registered listeners
 		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
 				SensorManager.SENSOR_DELAY_GAME);
 	}
@@ -397,13 +432,14 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	protected void onPause() {
 		super.onPause();
 
-		// to stop the listener and save battery
+		//To stop the listener
 		mSensorManager.unregisterListener(this);
 	}
-
+	
+	//Not in use
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// not in use
+		
 	}
 
 	@Override
@@ -416,11 +452,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		float degree = 0;
 
 		if (contactNumber != null && gpsIsAccurate && coordinatesAvailable(palLat, palLong)){
-			// get the angle around the z-axis rotated
+			//Get the angle around the z-axis rotated
 			degree = Math.round((event.values[0]+palBearing) % 360);
 		}
 
-		// create a rotation animation (reverse turn degree degrees)
+		//Create a rotation animation (reverse turn degree degrees)
 		RotateAnimation ra = new RotateAnimation(
 				currentDegree, 
 				-degree,
@@ -428,18 +464,20 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				Animation.RELATIVE_TO_SELF,
 				0.5f);
 
-		// how long the animation will take place
+		//How long the animation will take place
 		ra.setDuration(210);
 
-		// set the animation after the end of the reservation status
+		//Set the animation after the end of the reservation status
 		ra.setFillAfter(true);
 
-		// Start the animation
+		//Start the animation
 		arrowImage.startAnimation(ra);
 		currentDegree = -degree;
 	}
 
-	// Authenticates a user through Facebook Login
+	/**
+	 * Authenticates the user through facebook login
+	 */
 	
 	private void authenticate() {
 
@@ -453,7 +491,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				user = tempuser;
 				if (exception == null) {
 					Toast.makeText(getBaseContext(),  "You are now logged in!",  Toast.LENGTH_SHORT).show();
-					// createTable();
+					//Make sure the user has a registered phone number
 					checkIfPhoneNumberExists();
 					Authenticate.setClient(mClient);
 
@@ -461,7 +499,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					Toast.makeText(getBaseContext(),  "Error during login",  Toast.LENGTH_SHORT).show();
 					//Starting a new Intent
 					Intent intent = new Intent(getApplicationContext(), Main.class);
-					//Sending data to another Activity
+					//Go back to login page
 					startActivity(intent);
 					finish();
 				}
@@ -475,7 +513,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		// Get the Mobile Service Table instance to use
 		mToDoTable = mClient.getTable(UserInformation.class);
 	}
-
+	/**
+	 * Start uploading the user's position to the database if a position is available
+	 */
 	public void startUploadOwnCoordinates(View view){
 		uploadThread = Authenticate.getUploadThread();
 		if (coordinatesAvailable(myLat, myLong) && uploadThread == null) {
@@ -492,10 +532,16 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	}
 
+	/**
+	 * Return the user's latitude
+	 */
 	public double getLatitude(){
 		return myLat;
 	}
 
+	/**
+	 * Return the user's longitude
+	 */
 	public double getLongitude(){
 		return myLong;
 	}
@@ -535,41 +581,58 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	public boolean coordinatesAvailable (double latitude, double longitude) {
 		return latitude != NO_COORDINATE && longitude != NO_COORDINATE;
 	}
-
+	
+	/**
+	 * Method to decide what happens when the toggle button is clicked
+	 */
 	public void onToggleClicked (View view) {
 		boolean on = ((ToggleButton) view).isChecked();
-
+		//Start uploading position to the database when button is turned on
 		if (on) {
 			startUploadOwnCoordinates(view);
 		}
+		//Stop uploading coordinates when button is turned off
 		else {
 			stopUploadingCoordinates(view);
 		}
 	}
 
+	
+	//To set current location of the user
 	public class myLocationListener implements LocationListener {
 		float[] resultArray = new float[3];
-
+		
+		/**
+		 * Set the color of the arrow depending on accurate the GPS is
+		 */
 		public void setInitialArrowColor(Location location) {
 			if (!gpsIsAccurate && contactNumber != null && location.getAccuracy() <= LOW_ACCURACY) {
 				gpsIsAccurate = true;
 				precisionOfGps = location.getAccuracy();
+				//If the GPS has high accuracy, make the arrow green
 				if (precisionOfGps <= HIGH_ACCURACY) {
 					arrowImage.setImageResource(R.drawable.arrow_green);
 				}
+				//If the GPS has low accuracy, make the arrow green
 				else {
 					arrowImage.setImageResource(R.drawable.arrow_red);
 				}
 			}
 		}
-
+		
+		/**
+		 * Update the user's position
+		 */
 		public void updateCoordinates(Location location){
 			oldLong = myLong;
 			oldLat = myLat;
 			myLong = location.getLongitude();
 			myLat = location.getLatitude();	
 		}
-
+		
+		/**
+		 * Update the distance between the user and the pal
+		 */
 		public void updateDistance(Location location){
 			if (coordinatesAvailable(myLat, myLong) && coordinatesAvailable(palLat, palLong)) {
 
@@ -580,17 +643,21 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 				palBearing = Math.round(resultArray[1]);
 			}
 		}
-
+		
+		/**
+		 * Change the color of the arrow when the accuracy changes
+		 */
 		public void updateArrowColor(Location location){
 			if (contactNumber != null && coordinatesAvailable(palLat, palLong)){
-
+				
+				//When the accuracy turns from low to high, make the arrow green
 				if (precisionOfGps > HIGH_ACCURACY && location.getAccuracy() <= HIGH_ACCURACY){
 					arrowImage.setImageResource(R.drawable.arrow_green);
 					greenArrow = true;
 					redArrow = false;
 					precisionOfGps = location.getAccuracy();
 				}
-
+				//When the accuracy turns from high to low, make the arrow green
 				else if (precisionOfGps <= HIGH_ACCURACY && location.getAccuracy() > HIGH_ACCURACY) {
 					arrowImage.setImageResource(R.drawable.arrow_red);
 					redArrow = true;
@@ -600,6 +667,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			}
 		}
 
+		/**
+		 * Update the information when position is changed
+		 */
 		@Override
 		public void onLocationChanged(Location location) {
 			if (location != null) {

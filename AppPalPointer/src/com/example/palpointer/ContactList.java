@@ -30,9 +30,11 @@ public class ContactList extends Activity {
 
 		listViewContact = (ListView) findViewById(R.id.lvcontact);
 
+		//New database handler
 		handler = new DataHandler(getBaseContext());
 		handler.open();
 		Cursor C = handler.returnData();
+		//Adds contacts from SQLite to listview
 		if (C.moveToFirst()) {
 			do {
 				Contact contact = new Contact(C.getString(0), C.getString(1));
@@ -41,7 +43,12 @@ public class ContactList extends Activity {
 		}
 		handler.close();
 
+		//Sorts the contacts in alphabetical order
 		Collections.sort(contactlist, new Comparator<Contact>() {
+			
+			/**
+			 * Compares two contact names to enable sorting
+			 */
 			@Override
 			public int compare(Contact c1, Contact c2) {
 				return c1.getName().compareToIgnoreCase(c2.getName());
@@ -51,8 +58,8 @@ public class ContactList extends Activity {
 		displayContactlist();
 
 		Button AddContact = (Button) findViewById(R.id.addcontact);
-		// Listening to first button's event
 		AddContact.setOnClickListener(new View.OnClickListener() {
+			//Go to add contact activity when clicked
 			@Override
 			public void onClick(View arg0) {
 				// Starting a new Intent
@@ -65,41 +72,43 @@ public class ContactList extends Activity {
 		});
 	}
 
+	/**
+	 * Adding contacts to list view through adapter and making the contacts clickable
+	 */
 	public void displayContactlist() {
 
 		if (contactlist != null && contactlist.size() > 0) {
+
 			//Passing list data to Contact Adapter
-			ContactAdapter adapter = new ContactAdapter(this,
-					R.layout.rowcontact, contactlist);
+			ContactAdapter adapter = new ContactAdapter(this, R.layout.rowcontact, contactlist);
 			listViewContact.setAdapter(adapter);
 
+			//Decides what happens when a contact name is clicked
 			listViewContact.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int postion, long arg3) {
+				//Point at the pal who is clicked
+				public void onItemClick(AdapterView<?> arg0, View arg1, int postion, long arg3) {
 					String contactNumber = contactlist.get(postion).getNr();
 
 					// Starting a new Intent
-					Intent intent = new Intent(getApplicationContext(),
-							ToDoActivity.class); // Sending data to another Activity
-					intent.putExtra("com.example.palpointer.contactNr",
-							contactNumber);
+					Intent intent = new Intent(getApplicationContext(), ToDoActivity.class); 
+					intent.putExtra("com.example.palpointer.contactNr", contactNumber); // Sending the contact's phone number to another Activity
 					startActivity(intent);
 					finish();
 				}
 			});
 
+			//Decides what happens when a contact name is longclicked
 			listViewContact.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 				@Override
-				public boolean onItemLongClick(AdapterView<?> arg0,
-						View arg1, int postion, long id) {
+				public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int postion, long id) {
 					Contact contact = contactlist.get(postion);
-					// Starting a new Intent
-					Intent intent = new Intent(getApplicationContext(),
-							ContactEdit.class); // Sending data to another Activity
-					intent.putExtra("contact", contact);
+
+					// Start ContactEdit activity when longclicked
+					Intent intent = new Intent(getApplicationContext(), ContactEdit.class); 
+					intent.putExtra("contact", contact); // Sending the contact's information to another Activity
 					startActivity(intent);
 					finish();
 					return true;
@@ -109,13 +118,17 @@ public class ContactList extends Activity {
 		}
 	}
 
+	/**
+	 * Shows a toast with information for the user
+	 */
 	public void informUser(View view) {
-		Toast.makeText(
-				getBaseContext(),
-				"Click on the pal you want to find.\nLongclick to edit or erase pal.",
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(getBaseContext(), "Click on the pal you want to find.\nLongclick to edit or erase pal.", Toast.LENGTH_SHORT).show();
 	}
 
+
+	/**
+	 * Go back to ToDoActivity when back button is pressed and finish current activity
+	 */
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(getApplicationContext(), ToDoActivity.class);

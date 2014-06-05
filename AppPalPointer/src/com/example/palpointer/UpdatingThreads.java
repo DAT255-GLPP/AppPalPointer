@@ -34,37 +34,37 @@ public class UpdatingThreads extends Thread {
 		}
 	}
 
+	/**
+	 * Method to download a contact's position from the database
+	 */
 	private void downloadPalsCoordinates(){
 		try{
 			executeWhileLoop = true;
 			while (executeWhileLoop){
 				palsCoordinatesDownloaded = false;
+				//Check if a person with the contact's number exists in the database
 				theActivity.getTable().where().field("phonenumber").eq(ToDoActivity.getRequestedPhoneNumber()).execute(new TableQueryCallback<UserInformation>() {
 
 					@Override
 					public void onCompleted(List<UserInformation> entity, int count, Exception exception, ServiceFilterResponse response) {
 						if (exception == null) {
-
+							//If a user has the number, get the position
 							if (!entity.isEmpty()){				
 								theActivity.setPalsCoordinates(entity.get(0).getLatitude(), entity.get(0).getLongitude());
-								//theActivity.setCompassVisible(true);
 								palsCoordinatesDownloaded = true;	
 							}
 
-							//Tror inte att denna funkar nu när den är i tråden
 							else{
 								Toast.makeText(theActivity.getBaseContext(),  "Your pal has not uploaded his/her postion.",  Toast.LENGTH_SHORT).show();
 							}				
 						}
-
-						//Tror inte att denna funkar nu när den är i tråden
 						else {
 							theActivity.createAndShowDialog(exception, "UpdatingThreadscheckPhoneNumber");
 						}
 
 					}
 				});
-
+				//Sleep so downloading doesn't happen all the time
 				while (!palsCoordinatesDownloaded){
 					Thread.sleep(1 * 1000);
 				}
@@ -74,7 +74,10 @@ public class UpdatingThreads extends Thread {
 			theActivity.createAndShowDialog("Fail to keep uploading coordinates.", "Error");
 		}
 	}
-
+	
+	/**
+	 * Method to upload own coordinates to the database
+	 */
 	public void uploadOwnCoordinates(){
 
 		try {
@@ -82,11 +85,11 @@ public class UpdatingThreads extends Thread {
 			while(executeWhileLoop){
 				ownCoordinatesUploaded = false;
 
-				// Create a new item
+				//Set the user's position
 				item.setLatitude(theActivity.getLatitude());
 				item.setLongitude(theActivity.getLongitude());
 
-				// Insert the new item
+				//Update the user's position in the database
 				theActivity.getTable().update(item, new TableOperationCallback<UserInformation>() {
 
 					public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
@@ -97,7 +100,7 @@ public class UpdatingThreads extends Thread {
 						ownCoordinatesUploaded = true;	
 					}
 				});
-
+				//Sleep so uploading doesn't happen all the time
 				while (!ownCoordinatesUploaded){
 					Thread.sleep(1 * 1000);
 				}
