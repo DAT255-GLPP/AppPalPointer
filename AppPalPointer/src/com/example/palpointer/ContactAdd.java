@@ -26,6 +26,7 @@ public class ContactAdd extends Activity {
 		ContactNr = (EditText)findViewById(R.id.contactnr);
 		addContact = (Button)findViewById(R.id.addcontact);
 		addContact.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
 				phonenumber = ContactNr.getText().toString();	
@@ -41,6 +42,7 @@ public class ContactAdd extends Activity {
 					Intent intent = new Intent(getApplicationContext(), ContactList.class);
 					//Sending data to another Activity
 					startActivity(intent);
+					finish();
 				}
 				//Inform the user that a phonenumber is necessary if no number has been given by the user
 				else if (!name.matches("") && phonenumber.matches("")) {

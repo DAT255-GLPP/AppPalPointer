@@ -14,5 +14,8 @@
     <string name="toggle_on">Stop uploading position</string>
     <string name="toggle_off">Upload position</string>
     <string name="change_number">Change Nr</string>
-    
+    <string name="enter_name">Enter new name</string>
+    <string name="enter_nr">Enter new nr</string>
+    <string name="save_edit">Save edit</string>
+    <string name="delete">Delete contact</string>
 </resources>

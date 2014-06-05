@@ -1,34 +1,25 @@
 package com.example.palpointer;
 
-import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
-import com.microsoft.windowsazure.mobileservices.MobileServiceAuthenticationProvider;
-import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
-import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
-import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
-import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
-import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
-import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
-
 import java.net.MalformedURLException;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.DialogInterface;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,7 +27,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.microsoft.windowsazure.mobileservices.MobileServiceAuthenticationProvider;
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
+import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
+import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
+import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
+import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
+
 public class ToDoActivity extends Activity implements SensorEventListener{
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		// Getting instance of mToDoTable on Activity resume 	
+		mToDoTable = mClient.getTable(UserInformation.class);
+
+	}
 
 	private TextView textDistance;
 	private ToggleButton toggleButton;
@@ -63,7 +72,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	String phoneNumber;
 	private static String contactNumber;
 
+	
+	// Thread for downloading coordinates a pal
 	UpdatingThreads downloadThread;
+	// Thread for uploading coordinates of the user
 	UpdatingThreads uploadThread;
 
 	private boolean compassIsVisible = false;
@@ -93,7 +105,9 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 	// device sensor manager
 	private SensorManager mSensorManager;
 
+	// User Information using Facebook Login
 	public MobileServiceUser user;
+	
 	UserInformation item;
 	
 	/**
@@ -108,13 +122,13 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		textDistance = (TextView)findViewById(R.id.textDistance);
 		toggleButton = (ToggleButton)findViewById(R.id.toggleButton);
 
+		// Creating instance for location services to be able to access the user's location.
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		LocationListener ll = new myLocationListener();
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
 		try {
-			// Create the Mobile Service Client instance, using the provided
-			// Mobile Service URL and key
+			// Creating the Mobile Service Client instance, using the provided Mobile Service URL and key
 
 			mClient = Authenticate.getClient();
 			item = Authenticate.getUser();
@@ -141,11 +155,13 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		Button palsButton = (Button) findViewById(R.id.palsButton);
 		//Listening to first button's event
 		palsButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View arg0) {
 				//Starting a new Intent
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
 				startActivity(intent);
+				finish();
 			}
 		});
 
@@ -154,16 +170,21 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		//Listening to second button's event
 		changeNumber.setOnClickListener(new View.OnClickListener() {
 
+			@Override
 			public void onClick(View arg1) {
 				updatePhoneNumber();
 			}
 		});
 
+		
+		//Checking whether upload coordinates thread is already checked
 		if (Authenticate.getUploadThread() != null) {
 			toggleButton.setChecked(true);
 		}
 	}
 
+	
+	//Checking whether user already exists on Microsoft Azure Server
 	public void checkIfPhoneNumberExists(){
 		mToDoTable.where().field("userid").eq(user.getUserId()).execute(new TableQueryCallback<UserInformation>() {
 
@@ -188,6 +209,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		});
 	}
 
+	//Registering Phone Number for a user
 	public void setIdAndPhoneNumber() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setCancelable(false);
@@ -200,6 +222,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
 
@@ -219,8 +242,10 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					item.setUserId(user.getUserId());
 					item.setPhoneNumber(value);
 
+					//Uploading Phone number on server
 					mToDoTable.insert(item, new TableOperationCallback<UserInformation>() {
 
+						@Override
 						public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
 
 							if (exception == null) {
@@ -238,6 +263,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.show();
 	}	
 
+	//Updating phone number for user on Server
 	public void updatePhoneNumber(){
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -250,6 +276,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String value = input.getText().toString();
 
@@ -267,9 +294,11 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 				else {
 					item.setPhoneNumber(value);
-
+					
+					
 					mToDoTable.update(item, new TableOperationCallback<UserInformation>() {
 
+						@Override
 						public void onCompleted(UserInformation entity, Exception exception, ServiceFilterResponse response) {
 
 							if (exception != null) {
@@ -284,6 +313,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		alert.show();
 	}
 
+	//Starting thread for uploading coordinates
 	public void startDownloadingPalsPosition(){
 		downloadThread = new UpdatingThreads(this, item, "downloadThread");
 		downloadThread.start();
@@ -329,10 +359,31 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 	}
 
+	// Alert Dialog for exiting the application.
+	
 	@Override
 	public void onBackPressed() {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				ToDoActivity.this);
+		alertDialogBuilder.setTitle("Exit Application?");
+		alertDialogBuilder
+				.setCancelable(false)
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								ToDoActivity.this.finish();
+							}
+						})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -388,6 +439,8 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 		currentDegree = -degree;
 	}
 
+	// Authenticates a user through Facebook Login
+	
 	private void authenticate() {
 
 		// Login using the Facebook provider.
@@ -410,6 +463,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					Intent intent = new Intent(getApplicationContext(), Main.class);
 					//Sending data to another Activity
 					startActivity(intent);
+					finish();
 				}
 			}
 		});

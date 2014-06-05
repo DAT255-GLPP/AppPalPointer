@@ -37,6 +37,7 @@ public class ContactEdit extends Activity {
 		ContactInfo.setText("Contact name: " + contact.getName() + "\nContact nr: " + contact.getNr());
 
 		SaveEdit.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
 				phonenumber = ContactNr.getText().toString();			
@@ -64,10 +65,12 @@ public class ContactEdit extends Activity {
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
 				startActivity(intent);
+				finish();
 			}
 		});
 
 		DeleteContact.setOnClickListener(new OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				handler = new DataHandler(getBaseContext());
 				handler.open();
@@ -78,6 +81,7 @@ public class ContactEdit extends Activity {
 				Intent intent = new Intent(getApplicationContext(), ContactList.class);
 				//Sending data to another Activity
 				startActivity(intent);
+				finish();
 			}
 		});		
 	}
