@@ -6,5 +6,19 @@
     <string name="mobile_services">Mobile Services </string>
     <string name="menu_refresh">Refresh</string>
     <string name="checkbox_text">Item Text</string>
-    
-</resources>
+    <string name="my_position">Send My Position</string>
+    <string name="friends_position">Find A Friend</string>
+    <string name="pal_pointer">PalPointer</string>
+    <string name="login_text">Log in with your facebook account</string>
+    <string name="pals_button">Pals</string>
+    <string name="toggle_on">Stop uploading position</string>
+    <string name="toggle_off">Upload position</string>
+    <string name="change_number">Change Nr</string>
+    <string name="add_contact">Add contact</string>
+    <string name="add_pal">Add pal</string>
+    <string name="enter_name">Enter new name</string>
+    <string name="enter_nr">Enter new nr</string>
+    <string name="save_edit">Save edit</string>
+    <string name="delete">Delete contact</string>
+    <string name="info">Info</string>
+</resources>
