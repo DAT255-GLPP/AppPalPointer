@@ -85,4 +85,11 @@ public class ContactEdit extends Activity {
 			}
 		});		
 	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(getApplicationContext(), ContactList.class);
+		startActivity(intent);
+		finish();
+	}
 }
