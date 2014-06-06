@@ -35,17 +35,17 @@ public class ContactEdit extends Activity {
 		Bundle data = getIntent().getExtras();
 		contact = (Contact) data.getParcelable("contact");
 		ContactInfo.setText("Contact name: " + contact.getName() + "\nContact nr: " + contact.getNr());
-		
-		
+
+
 		//Saving contact info into SQLite after editing
 		SaveEdit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				name = ContactName.getText().toString();
-				phonenumber = ContactNr.getText().toString();			
+				phonenumber = ContactNr.getText().toString();
 				handler = new DataHandler(getBaseContext());
 				handler.open();
-				
+
 				/*
 				 * Handling when the user does not give correct contact information
 				 */
@@ -53,6 +53,11 @@ public class ContactEdit extends Activity {
 					name = contact.getName();
 					phonenumber = contact.getNr();
 					Toast.makeText(getBaseContext(),  "No changes made",  Toast.LENGTH_SHORT).show();
+				}
+				else if (!phonenumber.matches("") && phonenumber.length() != 10) {
+					name = contact.getName();
+					phonenumber = contact.getNr();
+					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
 				}
 				else if (!name.matches("") && phonenumber.matches("")) {
 					phonenumber = contact.getNr();
@@ -62,11 +67,7 @@ public class ContactEdit extends Activity {
 					name = contact.getName();
 					Toast.makeText(getBaseContext(),  "Contact number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
 				}
-				else if (phonenumber.length() != 10) {
-					Toast.makeText(getBaseContext(),  "The number has to be 10 digits long",  Toast.LENGTH_SHORT).show();
-				}
 				else {
-					phonenumber = contact.getNr();
 					Toast.makeText(getBaseContext(),  "Contact name changed to " + name + " and number changed to " + phonenumber,  Toast.LENGTH_SHORT).show();
 				}				
 				//Update contact's information
@@ -80,7 +81,7 @@ public class ContactEdit extends Activity {
 			}
 		});
 
-		
+
 		//Deleting contact from database on clicking delete button
 		DeleteContact.setOnClickListener(new OnClickListener() {
 			@Override
@@ -98,7 +99,7 @@ public class ContactEdit extends Activity {
 			}
 		});		
 	}
-	
+
 	/**
 	 * Go back to contact list when back button is pressed and finish current activity
 	 */
