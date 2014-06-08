@@ -136,10 +136,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 			//Check if a client and user exists, if not then set them
 			if ((mClient == null) && (user == null)){
 				mClient = new MobileServiceClient(
-						"https://palpointer.azure-mobile.net/",
-						"fFsYNDwyydTpUlQsPrqfQKezqvXonv99",
-						this
-						);
+						"https://palpointerapp.azure-mobile.net/", "rhPUYZFrxOEUhTrIfDobjvRZrsvwkt64", this );
 				authenticate();
 				createTable();
 			}
