@@ -38,63 +38,50 @@ import com.microsoft.windowsazure.mobileservices.UserAuthenticationCallback;
 
 public class ToDoActivity extends Activity implements SensorEventListener{
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		// Getting instance of mToDoTable on Activity resume 	
-		mToDoTable = mClient.getTable(UserInformation.class);
-
-	}
-
+	// TextView for indicating the distance to the Pal
 	private TextView textDistance;
+	
+	// Button to start and stop uploading the own position
 	private ToggleButton toggleButton;
 
+	// Default value for indicating that the coordinate is unavailable
 	private final static double NO_COORDINATE = -1000;
+	
+	// Boundaries for deciding the accuracy of the position, radius in meters
 	private final static float HIGH_ACCURACY = 30;
 	private final static float LOW_ACCURACY = 100;
 
-	double oldLat = NO_COORDINATE;
-	double oldLong = NO_COORDINATE;
-	double myLat = NO_COORDINATE;
-	double myLong = NO_COORDINATE;
-	double palLat = NO_COORDINATE;
-	double palLong = NO_COORDINATE;
-	double palBearing = 0;
-	int distance = 0;
-	double precisionOfGps;
-
-	boolean keepUploadingCoordinates = false;
-	boolean keepDownloadingPalsCoordinates = false;
-
-	Thread threadForUploadingOwnCoordinates;
-	Thread threadForUploadingPalsCoordinates;
-	String phoneNumber;
-	private static String contactNumber;
-
+	// Variables for storing different coordinates
+	private double oldLat = NO_COORDINATE;
+	private double oldLong = NO_COORDINATE;
+	private double myLat = NO_COORDINATE;
+	private double myLong = NO_COORDINATE;
+	private double palLat = NO_COORDINATE;
+	private double palLong = NO_COORDINATE;
 	
-	// Thread for downloading coordinates a pal
-	UpdatingThreads downloadThread;
-	// Thread for uploading coordinates of the user
-	UpdatingThreads uploadThread;
+	// Variables for indicating the bearing and distance to the Pal
+	private double palBearing = 0;
+	private int distance = 0;
+	
+	// Storing the value of accuracy of the position, radius in meters
+	private double precisionOfGps;
+	
+	// Variable for indicating the Pal to find
+	private static String contactNumber;
+	
+	// Threads for downloading and uploading coordinates
+	private UpdatingThreads downloadThread;
+	private UpdatingThreads uploadThread;
 
+	//Variable for indicating if the compass is visible or not
 	private boolean compassIsVisible = false;
 
+	//Variable for indicating if the gps is  accurate or not, if radius is less than 100 meters
 	private boolean gpsIsAccurate = false;
 
-	boolean greenArrow = false;
-	boolean redArrow = false;
-
-	/**
-	 * Mobile Service Client reference
-	 */
-	private MobileServiceClient mClient;
-
-	/**
-	 * Mobile Service Table used to access data
-	 */
-	private MobileServiceTable<UserInformation> mToDoTable;	
-
+	//Variables for deciding whether the arrow should be green or red, position within a radius of 100 or 30 meters
+	private boolean redArrow = false;
+	private boolean greenArrow = false;
 
 	// define the display assembly compass picture
 	private ImageView arrowImage;
@@ -104,11 +91,27 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 
 	// device sensor manager
 	private SensorManager mSensorManager;
+	
+	// Mobile Service Client reference
+	private MobileServiceClient mClient;
+
+	// Mobile Service Table used to access data
+	private MobileServiceTable<UserInformation> mToDoTable;	
 
 	// User Information using Facebook Login
-	public MobileServiceUser user;
+	private MobileServiceUser user;
 	
-	UserInformation item;
+	// Used to change the users information stored in the database 
+	private UserInformation item;
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		// Getting instance of mToDoTable on Activity resume 	
+		mToDoTable = mClient.getTable(UserInformation.class);
+
+	}
 	
 	/**
 	 * Initializes the activity
@@ -654,7 +657,7 @@ public class ToDoActivity extends Activity implements SensorEventListener{
 					redArrow = false;
 					precisionOfGps = location.getAccuracy();
 				}
-				//When the accuracy turns from high to low, make the arrow green
+				//When the accuracy turns from high to low, make the arrow red
 				else if (precisionOfGps <= HIGH_ACCURACY && location.getAccuracy() > HIGH_ACCURACY) {
 					arrowImage.setImageResource(R.drawable.arrow_red);
 					redArrow = true;
